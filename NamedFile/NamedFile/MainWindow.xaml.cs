@@ -22,11 +22,13 @@ namespace NamedFile
     /// </summary>
     public partial class MainWindow : Window
     {
-        
 
+        List<RuleInfo> listRuleInfo;
         public MainWindow()
         {
             InitializeComponent();
+
+            listRuleInfo = new List<RuleInfo>();
         }
 
         private void btnBNamed_Click(object sender, RoutedEventArgs e)
@@ -83,6 +85,58 @@ namespace NamedFile
                 }
             }
 
+        }
+
+        private void btnRuleAdd_Click(object sender, RoutedEventArgs e)
+        {
+            RuleSetting ruleWin = new RuleSetting();
+
+            ruleWin.ShowDialog();
+
+        }
+
+        public void AddRule(RuleInfo info,params object[] parm)
+        {
+            listRuleInfo.Add(info);
+            string showrule = info.ruleName;
+            string showtxt;
+            switch (info.ruleType)
+            {
+                case RuleTypeEnum.Insert:
+                    RuleInfoInsert rii = (RuleInfoInsert)info;
+                    string fixstr = "";
+                    if (rii.insertType == 1)
+                        fixstr = "固定文本:" + rii.insertFixStr;
+                    else
+                        fixstr = "原文件";
+                    showtxt = showrule + " - " + fixstr + ",位置:" + rii.placeType;
+                    listRules.Items.Add(showtxt);
+                    break;
+                
+                case RuleTypeEnum.Replace:
+                    RuleInfoReplace rir = (RuleInfoReplace)info;
+
+                    string rtype = "";
+                    if (rir.replaceType == 1)
+                        rtype = "所有";
+                    else if (rir.replaceType == 2)
+                        rtype = "最前一个";
+                    else if (rir.replaceType == 3)
+                        rtype = "最后一个";
+                    showtxt = showrule + " - " + rtype + "," + rir.replaceFindText + "->" + rir.replaceNewText;
+                    if (rir.replaceIgnoreExp == 1)
+                        showtxt += "," + "忽略扩展名";
+                        listRules.Items.Add(showtxt);
+                    break;
+                case RuleTypeEnum.Delete:
+                    break;
+                case RuleTypeEnum.UpLower:
+                    break;
+                case RuleTypeEnum.PinYin:
+                    break;
+            }
+            
+            
         }
     }
 }

@@ -5,12 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NamedFile"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="464" Width="856">
     <Grid>
-        <ListBox Name="listFiles" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,448,0"/>
-        <ListBox Name="listOutputs" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="357,0,165,0"/>
-        <Button Name="btnBNamed" Content="开始" HorizontalAlignment="Left" Margin="679,131,0,0" VerticalAlignment="Top" Height="86" Width="111" Click="btnBNamed_Click"/>
-        <Button Name="btnGetFiles" Content="添加文件" HorizontalAlignment="Left" Margin="679,40,0,0" VerticalAlignment="Top" Height="56" Width="75" Click="btnGetFiles_Click"/>
+        <ListBox Name="listFiles" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,627,0"/>
+        <ListBox Name="listOutputs" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="281,0,309,0"/>
+        <ListBox x:Name="listRules" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="729,0,10,171"/>
+        <Button Name="btnBNamed" Content="开始" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="38" Width="111" Click="btnBNamed_Click" Margin="0,0,10,10"/>
+        <Button Name="btnGetFiles" Content="添加文件" HorizontalAlignment="Right" Margin="0,0,10,116" VerticalAlignment="Bottom" Height="37" Width="75" Click="btnGetFiles_Click"/>
+        <Button Name="btnRuleAdd" Content="添加规则" HorizontalAlignment="Right" Margin="0,0,10,67" VerticalAlignment="Bottom" Height="44" Width="75" Click="btnRuleAdd_Click"/>
 
     </Grid>
 </Window>
