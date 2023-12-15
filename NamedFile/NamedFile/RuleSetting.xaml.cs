@@ -15,52 +15,29 @@ using System.Windows.Shapes;
 
 namespace NamedFile
 {
-    public enum RuleTypeEnum
-    { 
-        Insert = 0,
-        Replace = 1, Delete = 2, UpLower = 3 , PinYin = 4 ,
-    }
-    public class RuleInfo
-    {
-        public RuleTypeEnum ruleType;
-        public string ruleName;
-
-        public string ToString()
-        { 
-            return ruleName;
-        }
-    }
-    public class RuleInfoInsert : RuleInfo
-    {
-        public int insertType = 1;  //插入模式，1：固定，2：源文件名
-        public string insertFixStr;
-        public int placeType = 1;   //插入位置，1：前方，2：后方
-    }
-    public class RuleInfoReplace : RuleInfo
-    {
-        public int replaceType = 1;  //插入模式，1：全部，2：前面第一个，3：后面第一个
-        public string replaceFindText;  //查找的字符串
-        public string replaceNewText;   //替换的字符串
-        public int replaceIgnoreExp = 1;   //忽略扩展名字
-    }
+    
     /// <summary>
     /// RuleSetting.xaml 的交互逻辑
     /// </summary>
     public partial class RuleSetting : Window
     {
-        Dictionary<int, RuleInfo> rulesDict;
+        Dictionary<int, RuleInfo> rulesDict;    //当前所有类型的列表
+        Dictionary<RuleTypeEnum, RuleInfo> rulesDictEnum;    //当前所有类型的列表
 
         GroupBox nowGroup;
         RuleInfo nowInfo;
+        int ruleListboxIndex = -1;
         public RuleSetting()
         {
             InitializeComponent();
             InitRules();
+            IsAdd(true);
         }
 
         void InitRules()
         {
             rulesDict = new Dictionary<int, RuleInfo>();
+            rulesDictEnum = new Dictionary<RuleTypeEnum, RuleInfo>();
             listRule.Items.Clear();
             RulesType_Insert();
             RulesType_Replace();
@@ -71,56 +48,82 @@ namespace NamedFile
         void RulesType_Insert()
         {
             RuleInfoInsert rule = new RuleInfoInsert();
-            rule.ruleType = RuleTypeEnum.Insert;
-            rule.ruleName = "插入";
-
-            rulesDict.Add(listRule.Items.Count, rule);
+            rule.no = listRule.Items.Count;
+            rulesDict.Add(rule.no, rule);
+            rulesDictEnum.Add(rule.ruleType, rule);
             listRule.Items.Add(rule.ToString());
 
         }
         void RulesType_Replace()
         {
             RuleInfoReplace rule = new RuleInfoReplace();
-            rule.ruleType = RuleTypeEnum.Replace;
-            rule.ruleName = "替换";
-            rulesDict.Add(listRule.Items.Count, rule);
+            rule.no = listRule.Items.Count;
+            rulesDict.Add(rule.no, rule);
+            rulesDictEnum.Add(rule.ruleType, rule);
             listRule.Items.Add(rule.ToString());
         }
         void RulesType_Delete()
         {
-            RuleInfo rule = new RuleInfo();
-            rule.ruleType = RuleTypeEnum.Delete;
-            rule.ruleName = "删除";
-            rulesDict.Add(listRule.Items.Count, rule);
+            RuleInfoDelete rule = new RuleInfoDelete();
+            rule.no = listRule.Items.Count;
+            rulesDict.Add(rule.no, rule);
+            rulesDictEnum.Add(rule.ruleType, rule);
             listRule.Items.Add(rule.ToString());
         }
         void RulesType_UpLower()
         {
-            RuleInfo rule = new RuleInfo();
-            rule.ruleType = RuleTypeEnum.UpLower;
-            rule.ruleName = "大小写";
-            rulesDict.Add(listRule.Items.Count, rule);
+            RuleInfoUpLower rule = new RuleInfoUpLower();
+            rule.no = listRule.Items.Count;
+            rulesDict.Add(rule.no, rule);
+            rulesDictEnum.Add(rule.ruleType, rule);
             listRule.Items.Add(rule.ToString());
         }
         void RulesType_Pinyin()
         {
-            RuleInfo rule = new RuleInfo();
-            rule.ruleType = RuleTypeEnum.PinYin;
-            rule.ruleName = "拼音";
-            rulesDict.Add(listRule.Items.Count, rule);
+            RuleInfoPinYin rule = new RuleInfoPinYin();
+            rule.no = listRule.Items.Count;
+            rulesDict.Add(rule.no, rule);
+            rulesDictEnum.Add(rule.ruleType, rule);
             listRule.Items.Add(rule.ToString());
-            
         }
 
       
 
         
-        //选择一个类型后
+        //选择一个类型后,显示数据
         private void listRule_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int selectIdx = ((ListBox)sender).SelectedIndex;
             nowInfo = rulesDict[selectIdx];
 
+            ShowGroup(nowInfo);
+        }
+
+        void IsAdd(bool isAdd)
+        {
+            if (isAdd)
+            {
+                btnAddRule.Visibility = Visibility.Visible;
+                btnEditRule.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                btnAddRule.Visibility = Visibility.Hidden;
+                btnEditRule.Visibility = Visibility.Visible;
+            }
+        }
+
+        public void SelectOneRule(RuleInfo rule , int _ruleListboxIndex)
+        {
+            ruleListboxIndex = _ruleListboxIndex;   //当前已经添加的规则里的序号
+            //listRule.SelectedIndex = rule.no;   //让ListBox选择相应的面板
+            IsAdd(false);
+            ShowGroup(rule);    //刷新数据 
+        }
+
+        void ShowGroup(RuleInfo rule)
+        {
+            nowInfo = rule;
             if (nowGroup != null)
                 nowGroup.Visibility = Visibility.Hidden;
             nowGroup = (GroupBox)mainGrid.FindName("groupBox" + nowInfo.ruleType);
@@ -129,23 +132,10 @@ namespace NamedFile
             {
                 case RuleTypeEnum.Insert:
                     RuleInfoInsert rii = (RuleInfoInsert)nowInfo;
-                    if (rii.insertType == 1)
-                    {
-                        insertTypeFix.IsChecked = true;
-                        tbInsertFixStr.Text = rii.insertFixStr;
-                    }
-                    else
-                    { 
-                        insertTypeOri.IsChecked = true;
-                    }
-                    if (rii.placeType == 1)
-                    {
-                        placeFront.IsChecked = true;
-                    }
-                    else
-                    {
-                        placeBack.IsChecked = true;
-                    }
+                    if (rii.insertType == 1) { insertTypeFix.IsChecked = true; tbInsertFixStr.Text = rii.insertFixStr; }
+                    else { insertTypeOri.IsChecked = true; }
+                    if (rii.placeType == 1) { placeFront.IsChecked = true; }
+                    else { placeBack.IsChecked = true; }
                     break;
                 case RuleTypeEnum.Replace:
                     RuleInfoReplace rir = (RuleInfoReplace)nowInfo;
@@ -160,64 +150,114 @@ namespace NamedFile
                     cbReplaceIgnExp.IsChecked = rir.replaceIgnoreExp == 1;
                     break;
                 case RuleTypeEnum.Delete:
+                    RuleInfoDelete rid = (RuleInfoDelete)nowInfo;
+                    tbDelBegin.Text = rid.deleteBegin.ToString();
+                    switch (rid.deleteType)
+                    {
+                        case 1: rbDelToEnd.IsChecked = true; break;
+                        case 2: rbDelNumEnd.IsChecked = true; tbDelEnd.Text = rid.deleteToNum.ToString(); break;
+                    }
+                    cbDelIgnoreExp.IsChecked = rid.deleteIgnoreExp == 1;
+                    cbDelL2R.IsChecked = rid.deleteL2R == 1;
                     break;
                 case RuleTypeEnum.UpLower:
+                    RuleInfoUpLower riul = (RuleInfoUpLower)nowInfo;
+                    switch (riul.uplowerType)
+                    {
+                        case 1: rbUpLowerAllBig.IsChecked = true; break;
+                        case 2: rbUpLowerFirstBig.IsChecked = true; break;
+                        case 3: rbUpLowerAllSmall.IsChecked = true; break;
+                        case 4: rbUpLowerAllFlip.IsChecked = true; break;
+                    }
+                    switch (riul.uplowerExpType)
+                    {
+                        case 1: rbUpLowerExpIgnore.IsChecked = true; break;
+                        case 2: rbUpLowerExpSmall.IsChecked = true; break;
+                        case 3: rbUpLowerExpBig.IsChecked = true; break;
+                    }
+
                     break;
                 case RuleTypeEnum.PinYin:
+                    RuleInfoPinYin ripy = (RuleInfoPinYin)nowInfo;
+                    switch (ripy.pinyinType)
+                    {
+                        case 1: rbPinYinAll.IsChecked = true; break;
+                        case 2: rbPinYinFirst.IsChecked = true; break;
+                    }
+                    cbPinYinIgnoreExp.IsChecked = ripy.pinyinIgnoreExp == 1;
                     break;
             }
         }
 
-        //添加或者修改规则后
-        private void btnRule_Click(object sender, RoutedEventArgs e)
+        //添加规则后
+        private void btnAddRule_Click(object sender, RoutedEventArgs e)
         {
             if (nowInfo == null)
                 return;
+            UpdateNowRule();
+
+            MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+            mainWindow.AddRule(nowInfo);
+
+            this.Close();
+        }
+        private void btnEditRule_Click(object sender, RoutedEventArgs e)
+        {
+            if (nowInfo == null)
+                return;
+            UpdateNowRule();
+            MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+            mainWindow.EditRule(nowInfo, ruleListboxIndex);
+            ruleListboxIndex = -1;
+            this.Close();
+        }
+
+        void UpdateNowRule()
+        {
             switch (nowInfo.ruleType)
             {
                 case RuleTypeEnum.Insert:
                     RuleInfoInsert rii = (RuleInfoInsert)nowInfo;
-
-                    if (insertTypeFix.IsChecked == true)
-                    {
-                        rii.insertType = 1;
-                        rii.insertFixStr = tbInsertFixStr.Text;
-                    }
-                    else
-                    {
-                        rii.insertType = 2;
-                    }
-                    if (placeFront.IsChecked == true)
-                    {
-                        rii.placeType = 1;
-                    }
-                    else
-                    {
-                        rii.placeType = 2;
-                    }
-
+                    if (insertTypeFix.IsChecked == true) { rii.insertType = 1; rii.insertFixStr = tbInsertFixStr.Text; }
+                    else { rii.insertType = 2; }
+                    if (placeFront.IsChecked == true) { rii.placeType = 1; }
+                    else { rii.placeType = 2; }
                     break;
-                
+
                 case RuleTypeEnum.Replace:
                     RuleInfoReplace rir = (RuleInfoReplace)nowInfo;
-                    rir.replaceFindText = tbReplaceFindText.Text  ;
+                    rir.replaceFindText = tbReplaceFindText.Text;
                     rir.replaceNewText = tbReplaceNewText.Text;
+                    rir.replaceIgnoreExp = cbReplaceIgnExp.IsChecked == true ? 1 : 0;
                     if (rbReplaceAll.IsChecked == true) rir.replaceType = 1;
                     if (rbReplaceFront.IsChecked == true) rir.replaceType = 2;
                     if (rbReplaceBack.IsChecked == true) rir.replaceType = 3;
                     break;
                 case RuleTypeEnum.Delete:
+                    RuleInfoDelete rid = (RuleInfoDelete)nowInfo;
+                    rid.deleteBegin = int.Parse(tbDelBegin.Text);
+                    if (rbDelToEnd.IsChecked == true) rid.deleteType = 1;
+                    if (rbDelNumEnd.IsChecked == true) { rid.deleteType = 2; rid.deleteToNum = int.Parse(tbDelEnd.Text); }
+                    rid.deleteIgnoreExp = cbDelIgnoreExp.IsChecked == true ? 1 : 0;
+                    rid.deleteL2R = cbDelL2R.IsChecked == true ? 1 : 0;
                     break;
                 case RuleTypeEnum.UpLower:
+                    RuleInfoUpLower riul = (RuleInfoUpLower)nowInfo;
+                    if (rbUpLowerAllBig.IsChecked == true) riul.uplowerType = 1;
+                    if (rbUpLowerFirstBig.IsChecked == true) riul.uplowerType = 2;
+                    if (rbUpLowerAllSmall.IsChecked == true) riul.uplowerType = 3;
+                    if (rbUpLowerAllFlip.IsChecked == true) riul.uplowerType = 4;
+                    if (rbUpLowerExpIgnore.IsChecked == true) riul.uplowerExpType = 1;
+                    if (rbUpLowerExpSmall.IsChecked == true) riul.uplowerExpType = 2;
+                    if (rbUpLowerExpBig.IsChecked == true) riul.uplowerExpType = 3;
                     break;
                 case RuleTypeEnum.PinYin:
+                    RuleInfoPinYin ripy = (RuleInfoPinYin)nowInfo;
+                    if (rbPinYinAll.IsChecked == true) ripy.pinyinType = 1;
+                    if (rbPinYinFirst.IsChecked == true) ripy.pinyinType = 2;
+                    ripy.pinyinIgnoreExp = cbPinYinIgnoreExp.IsChecked == true ? 1 : 0;
                     break;
             }
-
-            MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
-            mainWindow.AddRule(nowInfo);
-
         }
-
     }
 }

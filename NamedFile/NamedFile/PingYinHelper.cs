@@ -57,7 +57,7 @@ public class PingYinHelper
     /// </summary>
     /// <param name="strChinese"></param>
     /// <returns></returns>
-    public static string GetFirstSpell(string strChinese)
+    public static string ConvertToFirstSpell(string strChinese)
     {
         try
         {
