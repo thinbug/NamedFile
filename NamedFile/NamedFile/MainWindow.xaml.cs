@@ -2,12 +2,15 @@
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -33,26 +36,53 @@ namespace NamedFile
         List<FileInfoData> listSelectFiles;
         List<RuleInfo> listRuleInfo;
 
-        public bool justFilename = true;
+        public bool justFilpath = false;
 
-        GridViewColumn filePathSaveS;
-        GridViewColumn fileNameSaveS;
-        GridViewColumn filePathSaveT;
-        GridViewColumn fileNameSaveT;
+        public string appName = "文件名修改器";
+
+
 
         public MainWindow()
         {
             InitializeComponent();
 
             listRuleInfo = new List<RuleInfo>();
-            filePathSaveS = gvcSPath;
-            SetColShowPath(!justFilename);
+            SetColShowPath(justFilpath);
+            string ver = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
+            this.Title = appName + " - " + ver;
+
+            CheckEditDelShow();
         }
 
+        //开始处理文件
         private void btnBNamed_Click(object sender, RoutedEventArgs e)
         {
-            
-            
+            if (listSelectFiles == null || listSelectFiles.Count == 0)
+                return;
+           
+            for (int i = 0; i < listSelectFiles.Count; i++)
+            {
+                FileInfoData fd = listSelectFiles[i];
+                try
+                {
+                    if (File.Exists(fd.sourcePath))
+                    {
+                        File.Move(fd.sourcePath, fd.newPath);
+                        //文件修改完毕后，需要把原文件修改了
+                        fd.sourcePath = fd.newPath;
+                        fd.sourceName = fd.newName;
+                    }
+                    else
+                    {
+                        Console.WriteLine("不存在的文件:" + fd.sourcePath);
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("错误:" + fd.sourcePath);
+                }
+            }
+            PreviewList();
         }
 
         private void btnGetFiles_Click(object sender, RoutedEventArgs e)
@@ -67,57 +97,24 @@ namespace NamedFile
                 string[] filesname = dialog.FileNames;
                 for (int i = 0; i < filesname.Length; i++)
                 {
-                    FileInfoData mydata = new FileInfoData {
+                    FileInfoData mydata = new FileInfoData
+                    {
                         sourcePath = filesname[i],
                         sourceName = Functions.GetFileName(filesname[i]),
                         newPath = "",
                         newName = ""
                     };
                     listSelectFiles.Add(mydata);
-                    //lvFileList.Items.Add(mydata);
-                    
-                    //if (!justFilename)
-                        
-                    
                 }
                 lvFileList.ItemsSource = listSelectFiles;
 
-
-                AddDefaultRule();
+                if (listRuleInfo.Count == 0)
+                    AddDefaultRule();
             }
 
         }
 
-        private void btnRuleAdd_Click(object sender, RoutedEventArgs e)
-        {
-            RuleSetting ruleWin = new RuleSetting();
-            ruleWin.ShowDialog();
-        }
 
-        //每次都需要一个原始的规则
-        void AddDefaultRule()
-        { 
-            RuleInfoInsert nowInfo = new RuleInfoInsert();
-            nowInfo.insertType = 2;
-            nowInfo.placeType = 1;
-            AddRule(nowInfo);
-        }
-
-        //添加规则
-        public void AddRule(RuleInfo nowInfo,params object[] parm)
-        {
-            listRuleInfo.Add(nowInfo);
-            string showtxt = FormatRuleString(nowInfo);
-            lbRules.Items.Add(showtxt);
-            PreviewList();
-        }
-        //修改列表里的现有规则
-        public void EditRule(RuleInfo nowInfo, int listRoleNo)
-        {
-            string showtxt = FormatRuleString(nowInfo);
-            lbRules.Items[listRoleNo] = showtxt;
-            PreviewList();
-        }
         string FormatRuleString(RuleInfo nowInfo)
         {
             string showrule = nowInfo.ruleName;
@@ -191,31 +188,16 @@ namespace NamedFile
             }
             return showtxt;
         }
-        
-        
-        //删除规则
-        void DeleteRule(int index)
-        {
-            lbRules.Items.RemoveAt(index);
-            listRuleInfo.RemoveAt(index);
-            PreviewList();
-        }
-        void ReadyEditRule(int index)
-        {
-            RuleSetting ruleWin = new RuleSetting();
-            ruleWin.SelectOneRule(listRuleInfo[index], index);
-            ruleWin.ShowDialog();
 
-        }
 
         //根据规则刷新新的预览文件列表
-        void PreviewList(bool toSave = false)
+        void PreviewList()
         {
             if (listSelectFiles == null || listSelectFiles.Count == 0)
                 return;
             Console.WriteLine("开始PreviewList");
             //lbOutputs.Items.Clear();
-            
+
             for (int i = 0; i < listSelectFiles.Count; i++)
             {
                 string filepath = listSelectFiles[i].sourcePath;
@@ -225,7 +207,7 @@ namespace NamedFile
                 {
                     RuleInfo rule = listRuleInfo[j];
                     string type = rule.GetType().Name.ToString();
-                    
+
                     switch (type)
                     {
                         case "RuleInfoInsert":
@@ -245,63 +227,29 @@ namespace NamedFile
                             break;
                     }
                 }
-                
+
                 string newpath = filepath.Replace(fname, nowStr);
                 string newname = fname.Replace(fname, nowStr);
-                //lbOutputs.Items.Add(newnew);
+                
                 listSelectFiles[i].newPath = newpath;
                 listSelectFiles[i].newName = newname;
-
-                if (toSave)
-                {
-                    try
-                    {
-                        if (File.Exists(filepath))
-                        {
-                            File.Move(filepath, newpath);
-
-                        }
-                        else
-                        {
-                            Console.WriteLine("不存在的文件:" + filepath);
-                        }
-                    }
-                    catch
-                    {
-                        Console.WriteLine("错误:" + filepath);
-                    }
-                }
             }
             lvFileList.Items.Refresh();
 
         }
 
-        private void OnRuleMenuClick(object sender, RoutedEventArgs e)
-        {
-            string menuname = ((MenuItem)sender).Name;
-            int index = lbRules.SelectedIndex;
-            
-            switch (menuname)
-            {
-                case "MenuItemRuleEdit":
-                    ReadyEditRule(index);
-                    break;
-                case "MenuItemRuleDel":
-                    DeleteRule(index);
-                    break;
-            }
-        }
 
 
 
         private void showFileNameClick(object sender, RoutedEventArgs e)
         {
-            justFilename = !justFilename;
-            SetColShowPath(justFilename);
+            justFilpath = !justFilpath;
+            SetColShowPath(justFilpath);
         }
 
         void SetColShowPath(bool show)
         {
+            miShowName.IsChecked = !show;
             lvFileListView.Columns.Remove(gvcSFile);
             lvFileListView.Columns.Remove(gvcTFile);
             lvFileListView.Columns.Remove(gvcSPath);
@@ -319,5 +267,148 @@ namespace NamedFile
             }
 
         }
+        #region 规则添加编辑等操作
+        //右键菜单点击
+        private void OnRuleMenuClick(object sender, RoutedEventArgs e)
+        {
+            string menuname = ((MenuItem)sender).Name;
+            int index = lbRules.SelectedIndex;
+
+            switch (menuname)
+            {
+                case "MenuItemRuleAdd":
+                    AddRule();
+                    break;
+
+                case "MenuItemRuleEdit":
+                    if (index == -1)
+                        return;
+                    ReadyEditRule(index);
+                    break;
+                case "MenuItemRuleDel":
+                    if (index == -1)
+                        return;
+                    DeleteRule(index);
+                    break;
+            }
+        }
+
+        //打开规则添加界面
+        void AddRule()
+        {
+            RuleSetting ruleWin = new RuleSetting();
+            ruleWin.ShowDialog();
+        }
+
+        //显示规则编辑界面
+        void ReadyEditRule(int index)
+        {
+            RuleSetting ruleWin = new RuleSetting();
+            ruleWin.SelectOneRule(listRuleInfo[index], index);
+            ruleWin.ShowDialog();
+        }
+        //删除规则
+        void DeleteRule(int index)
+        {
+            lbRules.Items.RemoveAt(index);
+            listRuleInfo.RemoveAt(index);
+            PreviewList();
+        }
+
+
+        //每次都需要一个原始的规则，如果添加文件后没有规则会添加一个默认规则
+        void AddDefaultRule()
+        {
+            RuleInfoInsert nowInfo = new RuleInfoInsert();
+            nowInfo.insertType = 2;
+            nowInfo.placeType = 1;
+            AddRule(nowInfo);
+        }
+
+        //添加规则，从添加规则界面确定后回调回来的确认
+        public void AddRule(RuleInfo nowInfo)
+        {
+            listRuleInfo.Add(nowInfo);
+            string showtxt = FormatRuleString(nowInfo);
+            lbRules.Items.Add(showtxt);
+            PreviewList();
+        }
+        //修改列表里的现有规则，从修改界面回调回来的。
+        public void EditRule(RuleInfo nowInfo, int listRoleNo)
+        {
+            string showtxt = FormatRuleString(nowInfo);
+            lbRules.Items[listRoleNo] = showtxt;
+            PreviewList();
+        }
+
+        //点击添加规则按钮
+        private void btnRuleAdd_Click(object sender, RoutedEventArgs e)
+        {
+            AddRule();
+        }
+        //点击编辑规则按钮
+        private void btnRuleEdit_Click(object sender, RoutedEventArgs e)
+        {
+            int index = lbRules.SelectedIndex;
+            if (index == -1)
+                return;
+            ReadyEditRule(index);
+        }
+        //双击修改规则
+        private void lbRules_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            int index = lbRules.SelectedIndex;
+            if (index == -1)
+                return;
+            ReadyEditRule(index);
+        }
+        //点击删除规则按钮
+        private void btnRuleDel_Click(object sender, RoutedEventArgs e)
+        {
+            int index = lbRules.SelectedIndex;
+
+            if (index == -1)
+                return;
+            DeleteRule(index);
+        }
+        //选择规则后，检测按钮是否启用
+        private void lbRules_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            CheckEditDelShow();
+        }
+        //取消选择或者鼠标其他地方点击关闭选择
+        private void lbRules_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            lbRules.SelectedIndex = -1;
+        }
+        //检测是否激活编辑和删除按钮
+        void CheckEditDelShow()
+        {
+            int index = lbRules.SelectedIndex;
+
+            if (index == -1)
+            {
+                btnRuleEdit.IsEnabled = false;
+                btnRuleDel.IsEnabled = false;
+
+                MenuItemRuleEdit.IsEnabled = false;
+                MenuItemRuleDel.IsEnabled = false;
+            }
+            else
+            {
+                btnRuleEdit.IsEnabled = true;
+                btnRuleDel.IsEnabled = true;
+
+                MenuItemRuleEdit.IsEnabled = true;
+                MenuItemRuleDel.IsEnabled = true;
+            }
+        }
+
+
+
+
+        #endregion
+
+        
     }
 }

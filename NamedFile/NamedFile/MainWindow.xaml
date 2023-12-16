@@ -17,40 +17,42 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <DockPanel Grid.Row="0">
+        <DockPanel Grid.Row="0" Background="#FFF0F0F0">
             <Menu DockPanel.Dock="Top">
-                <MenuItem Header="File">
+                <MenuItem Header="文件" Height="25">
                     <!--菜单项为MenuItem，文字使用属性 Header-->
-                    <MenuItem Name="menuOpen" Header="Open" ></MenuItem>
-                    <MenuItem Header="Save"></MenuItem>
-                    <MenuItem Header="Delete"></MenuItem>
+                    <MenuItem Header="添加文件" Click="btnGetFiles_Click"></MenuItem>
+                    <MenuItem Header="开始修改" Click="btnBNamed_Click"></MenuItem>
+                    <Separator></Separator>
+                    <MenuItem Header="退出"></MenuItem>
                 </MenuItem>
-                <MenuItem Header="Edit"></MenuItem>
-                <MenuItem Header="View"></MenuItem>
-                <MenuItem Header="About"></MenuItem>
+                
+                <MenuItem Header="选项">
+                    <MenuItem x:Name="miShowName" Header="显示文件名" IsCheckable="True"  Click="showFileNameClick"></MenuItem>
+                </MenuItem>
+                <MenuItem Header="关于">
+                    <MenuItem x:Name="miAbout" Header="关于" ></MenuItem>
+
+                </MenuItem>
             </Menu>
-            <ToolBar DockPanel.Dock="Top">
-                <!--ToolBar和StatusBar就是一个容器-->
-                <Button Content="Save"></Button>
+            <ToolBar DockPanel.Dock="Top" Background="#FFF0F0F0" Height="50" >
+                
+                <Button Content="添加文件" Height="50" Click="btnGetFiles_Click"></Button>
                 <Separator></Separator>
-                <Button Content="SaveAll"></Button>
-                <Separator></Separator>
-                <Button x:Name="btnJustFileName" Content="显示文件名" Click="showFileNameClick"></Button>
-                <Separator></Separator>
-                <Button Content="Start"></Button>
-                <Separator></Separator>
-                <Button Content="Test"></Button>
+                
+                <Button Content="开始修改" Height="50" Click="btnBNamed_Click"></Button>
+                
             </ToolBar>
             
         </DockPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" ></ColumnDefinition>
-                <ColumnDefinition Width="auto" MinWidth="200"></ColumnDefinition>
+                <ColumnDefinition Width="auto" MinWidth="250"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <ListView x:Name="lvFileList" Grid.Column="0">
                 <ListView.View>
-                    <GridView x:Name="lvFileListView">
+                    <GridView x:Name="lvFileListView" >
                         <GridViewColumn x:Name="gvcSPath" Header="原文件路径"  DisplayMemberBinding="{Binding sourcePath}" />
                         <GridViewColumn x:Name="gvcSFile" Header="原文件名"  DisplayMemberBinding="{Binding sourceName}" />
                         <GridViewColumn x:Name="gvcTPath" Header="预览修改"  DisplayMemberBinding="{Binding newPath}" />
@@ -58,19 +60,35 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <ListBox x:Name="lbRules" Grid.Column="1" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,0,0">
-            <ListBox.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Name="MenuItemRuleEdit" Header="修改"  Click="OnRuleMenuClick"/>
-                    <MenuItem Name="MenuItemRuleDel" Header="删除"  Click="OnRuleMenuClick"/>
-                </ContextMenu>
-            </ListBox.ContextMenu>
 
-            </ListBox>
+            <Grid Margin="0,0,0,0" Grid.Column="1" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto" ></RowDefinition>
+                </Grid.RowDefinitions>
+                <ListBox x:Name="lbRules" Grid.Row="0" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,0,0" SelectionChanged="lbRules_SelectionChanged" MouseDown="lbRules_MouseDown" MouseDoubleClick="lbRules_MouseDoubleClick" >
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Name="MenuItemRuleAdd" Header="添加"  Click="OnRuleMenuClick" />
+                            <MenuItem Name="MenuItemRuleEdit" Header="修改"  Click="OnRuleMenuClick" />
+                            <MenuItem Name="MenuItemRuleDel" Header="删除"  Click="OnRuleMenuClick"/>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                </ListBox>
+                <DockPanel Grid.Row="1"  Height="50" HorizontalAlignment="Center">
+                    <Button Name="btnRuleUp" Content="⬆" Margin="3" Height="40" Width="40"  FontSize="20"/>
+                    <Button Name="btnRuleDown" Content="⬇" Margin="3" Height="40" Width="40"  FontSize="20"/>
+
+                </DockPanel>
+                <DockPanel Grid.Row="2"  Height="80" HorizontalAlignment="Center" >
+                    <Button Name="btnRuleAdd" Content="添加规则" Margin="3"  Height="70" Width="70" Click="btnRuleAdd_Click"/>
+                    <Button Name="btnRuleEdit" Content="修改规则" Margin="3"  Height="70" Width="70" Click="btnRuleEdit_Click"/>
+                    <Button Name="btnRuleDel" Content="删除规则" Margin="3"  Height="70" Width="70" Click="btnRuleDel_Click"/>
+
+                </DockPanel>
+            </Grid>
             <GridSplitter Grid.Row="0" Grid.Column="0" Width="3" HorizontalAlignment="Right"/>
-        <Button Name="btnBNamed" Content="开始" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="38" Width="111" Click="btnBNamed_Click" Margin="0,0,10,10"/>
-        <Button Name="btnGetFiles" Content="添加文件" HorizontalAlignment="Right" Margin="0,0,10,116" VerticalAlignment="Bottom" Height="37" Width="75" Click="btnGetFiles_Click"/>
-        <Button Name="btnRuleAdd" Content="添加规则" HorizontalAlignment="Right" Margin="0,0,10,67" VerticalAlignment="Bottom" Height="44" Width="75" Click="btnRuleAdd_Click"/>
         </Grid>
 
         <DockPanel Grid.Row="2">
