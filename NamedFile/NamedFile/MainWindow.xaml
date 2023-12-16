@@ -6,10 +6,59 @@
         xmlns:local="clr-namespace:NamedFile"
         mc:Ignorable="d"
         Title="MainWindow" Height="464" Width="856">
+    
+   
     <Grid>
-        <ListBox Name="lbFiles" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,627,0"/>
-        <ListBox Name="lbOutputs" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="281,0,309,0"/>
-        <ListBox x:Name="lbRules" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="729,0,10,171">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <DockPanel Grid.Row="0">
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="File">
+                    <!--菜单项为MenuItem，文字使用属性 Header-->
+                    <MenuItem Name="menuOpen" Header="Open" ></MenuItem>
+                    <MenuItem Header="Save"></MenuItem>
+                    <MenuItem Header="Delete"></MenuItem>
+                </MenuItem>
+                <MenuItem Header="Edit"></MenuItem>
+                <MenuItem Header="View"></MenuItem>
+                <MenuItem Header="About"></MenuItem>
+            </Menu>
+            <ToolBar DockPanel.Dock="Top">
+                <!--ToolBar和StatusBar就是一个容器-->
+                <Button Content="Save"></Button>
+                <Separator></Separator>
+                <Button Content="SaveAll"></Button>
+                <Separator></Separator>
+                <Button x:Name="btnJustFileName" Content="显示文件名" Click="showFileNameClick"></Button>
+                <Separator></Separator>
+                <Button Content="Start"></Button>
+                <Separator></Separator>
+                <Button Content="Test"></Button>
+            </ToolBar>
+            
+        </DockPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" ></ColumnDefinition>
+                <ColumnDefinition Width="auto" MinWidth="200"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <ListView x:Name="lvFileList" Grid.Column="0">
+                <ListView.View>
+                    <GridView x:Name="lvFileListView">
+                        <GridViewColumn x:Name="gvcSPath" Header="原文件路径"  DisplayMemberBinding="{Binding sourcePath}" />
+                        <GridViewColumn x:Name="gvcSFile" Header="原文件名"  DisplayMemberBinding="{Binding sourceName}" />
+                        <GridViewColumn x:Name="gvcTPath" Header="预览修改"  DisplayMemberBinding="{Binding newPath}" />
+                        <GridViewColumn x:Name="gvcTFile" Header="预览修改"  DisplayMemberBinding="{Binding newName}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <ListBox x:Name="lbRules" Grid.Column="1" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,0,0">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Name="MenuItemRuleEdit" Header="修改"  Click="OnRuleMenuClick"/>
@@ -17,10 +66,20 @@
                 </ContextMenu>
             </ListBox.ContextMenu>
 
-        </ListBox>
+            </ListBox>
+            <GridSplitter Grid.Row="0" Grid.Column="0" Width="3" HorizontalAlignment="Right"/>
         <Button Name="btnBNamed" Content="开始" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="38" Width="111" Click="btnBNamed_Click" Margin="0,0,10,10"/>
         <Button Name="btnGetFiles" Content="添加文件" HorizontalAlignment="Right" Margin="0,0,10,116" VerticalAlignment="Bottom" Height="37" Width="75" Click="btnGetFiles_Click"/>
         <Button Name="btnRuleAdd" Content="添加规则" HorizontalAlignment="Right" Margin="0,0,10,67" VerticalAlignment="Bottom" Height="44" Width="75" Click="btnRuleAdd_Click"/>
+        </Grid>
 
+        <DockPanel Grid.Row="2">
+            <StatusBar DockPanel.Dock="Bottom">
+                <StatusBarItem>
+                    <TextBlock Name="lblCursorPosition" Text="xxxxxx" />
+                </StatusBarItem>
+            </StatusBar>
+        </DockPanel>
     </Grid>
+    
 </Window>

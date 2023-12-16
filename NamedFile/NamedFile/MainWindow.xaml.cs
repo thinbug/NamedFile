@@ -18,57 +18,40 @@ using System.Windows.Shapes;
 
 namespace NamedFile
 {
+    public class FileInfoData
+    {
+        public string sourcePath { get; set; }
+        public string sourceName { get; set; }
+        public string newPath { get; set; }
+        public string newName { get; set; }
+    }
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<string> listSelectFiles;
+        List<FileInfoData> listSelectFiles;
         List<RuleInfo> listRuleInfo;
 
         public bool justFilename = true;
+
+        GridViewColumn filePathSaveS;
+        GridViewColumn fileNameSaveS;
+        GridViewColumn filePathSaveT;
+        GridViewColumn fileNameSaveT;
+
         public MainWindow()
         {
             InitializeComponent();
 
             listRuleInfo = new List<RuleInfo>();
+            filePathSaveS = gvcSPath;
+            SetColShowPath(!justFilename);
         }
 
         private void btnBNamed_Click(object sender, RoutedEventArgs e)
         {
-            if (lbFiles == null)
-                return;
-            Console.WriteLine("开始");
-            lbOutputs.Items.Clear();
-            for (int i = 0; i < lbFiles.Items.Count; i++)
-            {
-                string filepath = (string)lbFiles.Items[i];
-                string fname = Functions.GetFileName(filepath);
-                
-                string nm = PingYinHelper.ConvertToAllSpell(fname, PingYinHelper.UpLowerOrNormal.Upper);
-
-                string fn = nm[0].ToString();
-                string newname = fn + " - " + fname;
-                string newpath = filepath.Replace(fname, newname);
-                lbOutputs.Items.Add(newpath);
-
-                try
-                {
-                    if (File.Exists(filepath))
-                    {
-                        File.Move(filepath, newpath);
-
-                    }
-                    else
-                    {
-                        Console.WriteLine("不存在的文件:"+ filepath);
-                    }
-                }
-                catch
-                {
-                    Console.WriteLine("错误:" + filepath);
-                }
-            }
+            
             
         }
 
@@ -80,17 +63,25 @@ namespace NamedFile
             dialog.Filter = "所有文件(*.*)|*.*";
             if (dialog.ShowDialog() == true)
             {
-                lbFiles.Items.Clear();
-                listSelectFiles = new List<string>();
+                listSelectFiles = new List<FileInfoData>();
                 string[] filesname = dialog.FileNames;
                 for (int i = 0; i < filesname.Length; i++)
                 {
-                    listSelectFiles.Add(filesname[i]);
-                    if (!justFilename)
-                        lbFiles.Items.Add(filesname[i]);
-                    else
-                        lbFiles.Items.Add(Functions.GetFileName(filesname[i]));
+                    FileInfoData mydata = new FileInfoData {
+                        sourcePath = filesname[i],
+                        sourceName = Functions.GetFileName(filesname[i]),
+                        newPath = "",
+                        newName = ""
+                    };
+                    listSelectFiles.Add(mydata);
+                    //lvFileList.Items.Add(mydata);
+                    
+                    //if (!justFilename)
+                        
+                    
                 }
+                lvFileList.ItemsSource = listSelectFiles;
+
 
                 AddDefaultRule();
             }
@@ -220,15 +211,15 @@ namespace NamedFile
         //根据规则刷新新的预览文件列表
         void PreviewList(bool toSave = false)
         {
-            if (lbFiles == null || listRuleInfo.Count == 0)
+            if (listSelectFiles == null || listSelectFiles.Count == 0)
                 return;
             Console.WriteLine("开始PreviewList");
-            lbOutputs.Items.Clear();
+            //lbOutputs.Items.Clear();
             
-            for (int i = 0; i < lbFiles.Items.Count; i++)
+            for (int i = 0; i < listSelectFiles.Count; i++)
             {
-                string filepath = (string)lbFiles.Items[i];
-                string fname = Functions.GetFileName(filepath);
+                string filepath = listSelectFiles[i].sourcePath;
+                string fname = listSelectFiles[i].sourceName;
                 string nowStr = "";
                 for (int j = 0; j < listRuleInfo.Count; j++)
                 {
@@ -254,13 +245,12 @@ namespace NamedFile
                             break;
                     }
                 }
-                //string nm = PingYinHelper.ConvertToAllSpell(fname, PingYinHelper.UpLowerOrNormal.Upper);
-
-                //string fn = nm[0].ToString();
-                //string newname = fn + " - " + fname;
+                
                 string newpath = filepath.Replace(fname, nowStr);
-                string newnew = fname.Replace(fname, nowStr);
-                lbOutputs.Items.Add(newnew);
+                string newname = fname.Replace(fname, nowStr);
+                //lbOutputs.Items.Add(newnew);
+                listSelectFiles[i].newPath = newpath;
+                listSelectFiles[i].newName = newname;
 
                 if (toSave)
                 {
@@ -282,6 +272,8 @@ namespace NamedFile
                     }
                 }
             }
+            lvFileList.Items.Refresh();
+
         }
 
         private void OnRuleMenuClick(object sender, RoutedEventArgs e)
@@ -300,6 +292,32 @@ namespace NamedFile
             }
         }
 
-       
+
+
+        private void showFileNameClick(object sender, RoutedEventArgs e)
+        {
+            justFilename = !justFilename;
+            SetColShowPath(justFilename);
+        }
+
+        void SetColShowPath(bool show)
+        {
+            lvFileListView.Columns.Remove(gvcSFile);
+            lvFileListView.Columns.Remove(gvcTFile);
+            lvFileListView.Columns.Remove(gvcSPath);
+            lvFileListView.Columns.Remove(gvcTPath);
+            if (show)
+            {
+                //显示路径
+                lvFileListView.Columns.Insert(0, gvcSPath);
+                lvFileListView.Columns.Insert(1, gvcTPath);
+            }
+            else
+            {
+                lvFileListView.Columns.Insert(0, gvcSFile);
+                lvFileListView.Columns.Insert(1, gvcTFile);
+            }
+
+        }
     }
 }
