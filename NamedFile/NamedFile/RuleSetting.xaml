@@ -5,152 +5,160 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NamedFile"
         mc:Ignorable="d"
-        Title="RuleSetting" Height="450" Width="771" ShowInTaskbar="False" ResizeMode="NoResize">
+        Title="RuleSetting" Height="307" Width="534" 
+        ShowInTaskbar="False" ResizeMode="NoResize" Activated="Window_Activated">
     <Grid Margin="0,0,0,0" x:Name="mainGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="auto" MinHeight="50"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <ListBox Name="listRule" Margin="5" Grid.Row="0" Grid.Column="0" d:ItemsSource="{d:SampleData ItemCount=5}" HorizontalAlignment="Left" Width="150" SelectionChanged="listRule_SelectionChanged" />
+        <StackPanel Margin="5" Grid.Row="0" Grid.Column="1" >
+            <GroupBox x:Name="groupBoxInsert" Grid.Row="0" Grid.Column="1" Header="插入" Visibility="Collapsed">
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="5"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Content="插入 : " HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    <RadioButton Grid.Row="0" Grid.Column="1" x:Name="insertTypeFix" GroupName="inserttype" IsChecked="True" VerticalAlignment="Center" >固定文本</RadioButton>
+                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="tbInsertFixStr" TextWrapping="Wrap" Text="TextBox" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="108,0,0,0" />
+                    <RadioButton Grid.Row="1" Grid.Column="1" x:Name="insertTypeOri" GroupName="inserttype" VerticalAlignment="Center" HorizontalAlignment="Left"   >原文件名</RadioButton>
+                    <Label Grid.Row="3" Grid.Column="0" Content="位置 : " HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    <RadioButton Grid.Row="3" Grid.Column="1" x:Name="placeFront" GroupName="placegroup" IsChecked="True" VerticalAlignment="Center" >字符串前</RadioButton>
+                    <RadioButton Grid.Row="4" Grid.Column="1" Name="placeBack" GroupName="placegroup" VerticalAlignment="Center"  >字符串后</RadioButton>
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="groupBoxReplace" Grid.Row="0" Grid.Column="1" Header="替换" Visibility="Collapsed">
+                <Grid Margin="0,0,0,0" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Content="查找内容 : " HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBox x:Name="tbReplaceFindText" Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Center" Margin="0,0,0,0" />
+                    <Label Grid.Row="1" Grid.Column="0" Content="替换内容 : " HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="1" x:Name="tbReplaceNewText" Grid.Column="1" TextWrapping="Wrap" Text="TextBox" Margin="0,0,0,0" VerticalAlignment="Center" />
+
+                    <CheckBox Grid.Row="2" Grid.Column="1" x:Name="cbReplaceIgnExp"   Margin="0,0,0,0" VerticalAlignment="Center" >忽略扩展名</CheckBox>
+                    <RadioButton Grid.Row="3" Grid.Column="1" x:Name="rbReplaceAll" GroupName="findgroup" IsChecked="True" VerticalAlignment="Center">全部</RadioButton>
+                    <RadioButton Grid.Row="4" Grid.Column="1" x:Name="rbReplaceFront" GroupName="findgroup" VerticalAlignment="Center" >最前一个</RadioButton>
+                    <RadioButton Grid.Row="5" Grid.Column="1" x:Name="rbReplaceBack" GroupName="findgroup" VerticalAlignment="Center" >最后一个</RadioButton>
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="groupBoxDelete" Header="删除" Grid.Row="0" Grid.Column="1" Visibility="Collapsed">
+                <Grid Margin="0,0,0,0" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Name="labDelBegin"  Content="开始位置 : " HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="tbDelBegin" TextWrapping="Wrap" Text="1" VerticalAlignment="Center" Margin="20,0,0,0" />
+                    <Label Grid.Row="1" Grid.Column="0" Name="labDelEnd" Content="结束位置 : " HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <RadioButton Grid.Row="1" Grid.Column="1" x:Name="rbDelNumEnd" GroupName="delgroup" IsChecked="True" VerticalAlignment="Center"></RadioButton>
+                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="tbDelEnd" TextWrapping="Wrap" Text="2" Margin="20,0,0,0" VerticalAlignment="Center" />
+                    <RadioButton Grid.Row="2" Grid.Column="1" x:Name="rbDelToEnd" GroupName="delgroup" IsChecked="True" VerticalAlignment="Center">到结束</RadioButton>
+                    <CheckBox Grid.Row="3" Grid.Column="1" x:Name="cbDelIgnoreExp"  Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="True" >忽略扩展名</CheckBox>
+                    <CheckBox Grid.Row="4" Grid.Column="1"  x:Name="cbDelL2R" Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="True">从左到右</CheckBox>
 
 
-        <ListBox Name="listRule" d:ItemsSource="{d:SampleData ItemCount=5}" HorizontalAlignment="Left" Width="234" SelectionChanged="listRule_SelectionChanged" Margin="10,5,0,67"/>
-        <GroupBox x:Name="groupBoxInsert" Header="插入" Margin="264,0,10,67" Visibility="Hidden">
-            <Grid Margin="0,0,0,0" >
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Content="插入 : " HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <RadioButton Grid.Row="0" Grid.Column="1" x:Name="insertTypeFix" GroupName="inserttype" IsChecked="True" VerticalAlignment="Center" >固定文本</RadioButton>
-                <TextBox Grid.Row="0" Grid.Column="1" x:Name="tbInsertFixStr" TextWrapping="Wrap" Text="TextBox" Width="112" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="122,0,0,0" />
-                <RadioButton Grid.Row="1" Grid.Column="1" x:Name="insertTypeOri" GroupName="inserttype" VerticalAlignment="Center" HorizontalAlignment="Left"   >原文件名</RadioButton>
-                <Label Grid.Row="2" Grid.Column="0" Content="位置 : " HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <RadioButton Grid.Row="2" Grid.Column="1" x:Name="placeFront" GroupName="placegroup" IsChecked="True" VerticalAlignment="Center" >字符串前</RadioButton>
-                <RadioButton Grid.Row="3" Grid.Column="1" Name="placeBack" GroupName="placegroup" VerticalAlignment="Center"  >字符串后</RadioButton>
-            </Grid>
-        </GroupBox>
-        <GroupBox x:Name="groupBoxReplace" Header="替换" Margin="264,0,10,67" Visibility="Hidden">
-            <Grid Margin="0,0,0,0" >
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Content="查找内容 : " HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <TextBox x:Name="tbReplaceFindText" Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Center" Margin="0,0,0,0" />
-                <Label Grid.Row="1" Grid.Column="0" Content="替换内容 : " HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <TextBox Grid.Row="1" x:Name="tbReplaceNewText" Grid.Column="1" TextWrapping="Wrap" Text="TextBox" Margin="0,0,0,0" VerticalAlignment="Center" />
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="groupBoxUpLower" Header="大小写" Grid.Row="0" Grid.Column="1" Visibility="Collapsed">
+                <Grid Margin="0,0,0,0" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
 
-                <CheckBox Grid.Row="2" Grid.Column="1" x:Name="cbReplaceIgnExp"   Margin="0,0,0,0" VerticalAlignment="Center" >忽略扩展名</CheckBox>
-                <RadioButton Grid.Row="3" Grid.Column="1" x:Name="rbReplaceAll" GroupName="findgroup" IsChecked="True" VerticalAlignment="Center">全部</RadioButton>
-                <RadioButton Grid.Row="4" Grid.Column="1" x:Name="rbReplaceFront" GroupName="findgroup" VerticalAlignment="Center" >最前一个</RadioButton>
-                <RadioButton Grid.Row="5" Grid.Column="1" x:Name="rbReplaceBack" GroupName="findgroup" VerticalAlignment="Center" >最后一个</RadioButton>
-            </Grid>
-        </GroupBox>
-        <GroupBox x:Name="groupBoxDelete" Header="删除" Margin="264,0,10,67" Visibility="Hidden">
-            <Grid Margin="0,0,0,0" >
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Name="labDelBegin"  Content="开始位置 : " HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <TextBox Grid.Row="0" Grid.Column="1" x:Name="tbDelBegin" TextWrapping="Wrap" Text="1" VerticalAlignment="Center" Margin="0,0,0,0" />
-                <Label Grid.Row="1" Grid.Column="0" Name="labDelEnd" Content="结束位置 : " HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <RadioButton Grid.Row="1" Grid.Column="1" x:Name="rbDelNumEnd" GroupName="delgroup" IsChecked="True" VerticalAlignment="Center"></RadioButton>
-                <TextBox Grid.Row="1" Grid.Column="1" x:Name="tbDelEnd" TextWrapping="Wrap" Text="2" Margin="20,0,0,0" VerticalAlignment="Center" />
-                <RadioButton Grid.Row="2" Grid.Column="1" x:Name="rbDelToEnd" GroupName="delgroup" IsChecked="True" VerticalAlignment="Center">到结束</RadioButton>
-                <CheckBox Grid.Row="3" Grid.Column="1" x:Name="cbDelIgnoreExp"  Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="True" >忽略扩展名</CheckBox>
-                <CheckBox Grid.Row="4" Grid.Column="1"  x:Name="cbDelL2R" Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="True">从左到右</CheckBox>
+                    <RadioButton Grid.Row="0" Grid.Column="0" x:Name="rbUpLowerAllBig"  GroupName="uplowergroup" IsChecked="True" VerticalAlignment="Center">全部大写</RadioButton>
+                    <RadioButton Grid.Row="1" Grid.Column="0" x:Name="rbUpLowerFirstBig" GroupName="uplowergroup" VerticalAlignment="Center">首字母大写</RadioButton>
+                    <RadioButton Grid.Row="2" Grid.Column="0" x:Name="rbUpLowerAllSmall" GroupName="uplowergroup"  VerticalAlignment="Center">全部小写</RadioButton>
+                    <RadioButton Grid.Row="3" Grid.Column="0" x:Name="rbUpLowerAllFlip" GroupName="uplowergroup"  VerticalAlignment="Center">反转大小写</RadioButton>
+                    <RadioButton Grid.Row="0" Grid.Column="1" x:Name="rbUpLowerExpIgnore" GroupName="uplowerexpgroup" Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="True" >忽略扩展名</RadioButton>
+                    <RadioButton Grid.Row="1" Grid.Column="1" x:Name="rbUpLowerExpSmall"   GroupName="uplowerexpgroup" Margin="0,0,0,0" VerticalAlignment="Center" >扩展名小写</RadioButton>
+                    <RadioButton Grid.Row="2" Grid.Column="1" x:Name="rbUpLowerExpBig"   GroupName="uplowerexpgroup" Margin="0,0,0,0" VerticalAlignment="Center" >扩展名大写</RadioButton>
 
 
-            </Grid>
-        </GroupBox>
-        <GroupBox x:Name="groupBoxUpLower" Header="大小写" Margin="264,0,10,67" Visibility="Hidden">
-            <Grid Margin="0,0,0,0" >
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="groupBoxPinYin" Header="拼音" Grid.Row="0" Grid.Column="1" Visibility="Collapsed">
+                <Grid Margin="0,0,0,0" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Content="汉字转拼音 : " HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                <RadioButton Grid.Row="0" Grid.Column="0" x:Name="rbUpLowerAllBig"  GroupName="uplowergroup" IsChecked="True" VerticalAlignment="Center">全部大写</RadioButton>
-                <RadioButton Grid.Row="1" Grid.Column="0" x:Name="rbUpLowerFirstBig" GroupName="uplowergroup" VerticalAlignment="Center">首字母大写</RadioButton>
-                <RadioButton Grid.Row="2" Grid.Column="0" x:Name="rbUpLowerAllSmall" GroupName="uplowergroup"  VerticalAlignment="Center">全部小写</RadioButton>
-                <RadioButton Grid.Row="3" Grid.Column="0" x:Name="rbUpLowerAllFlip" GroupName="uplowergroup"  VerticalAlignment="Center">反转大小写</RadioButton>
-                <RadioButton Grid.Row="0" Grid.Column="1" x:Name="rbUpLowerExpIgnore" GroupName="uplowerexpgroup" Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="True" >忽略扩展名</RadioButton>
-                <RadioButton Grid.Row="1" Grid.Column="1" x:Name="rbUpLowerExpSmall"   GroupName="uplowerexpgroup" Margin="0,0,0,0" VerticalAlignment="Center" >扩展名小写</RadioButton>
-                <RadioButton Grid.Row="2" Grid.Column="1" x:Name="rbUpLowerExpBig"   GroupName="uplowerexpgroup" Margin="0,0,0,0" VerticalAlignment="Center" >扩展名大写</RadioButton>
+                    <RadioButton Grid.Row="0" Grid.Column="1" x:Name="rbPinYinAll" GroupName="pinyingroup" IsChecked="True" VerticalAlignment="Center">转换全拼</RadioButton>
+                    <RadioButton Grid.Row="1" Grid.Column="1" x:Name="rbPinYinFirst" GroupName="pinyingroup"  VerticalAlignment="Center">转首字母</RadioButton>
+                    <CheckBox Grid.Row="2" Grid.Column="1" x:Name="cbPinYinIgnoreExp"  Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="True" >忽略扩展名</CheckBox>
 
 
-            </Grid>
-        </GroupBox>
-        <GroupBox x:Name="groupBoxPinYin" Header="拼音" Margin="264,0,10,67" Visibility="Hidden">
-            <Grid Margin="0,0,0,0" >
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Content="汉字转拼音 : " HorizontalAlignment="Left" VerticalAlignment="Center"/>
-
-                <RadioButton Grid.Row="0" Grid.Column="1" x:Name="rbPinYinAll" GroupName="pinyingroup" IsChecked="True" VerticalAlignment="Center">转换全拼</RadioButton>
-                <RadioButton Grid.Row="1" Grid.Column="1" x:Name="rbPinYinFirst" GroupName="pinyingroup"  VerticalAlignment="Center">转首字母</RadioButton>
-                <CheckBox Grid.Row="2" Grid.Column="1" x:Name="cbPinYinIgnoreExp"  Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="True" >忽略扩展名</CheckBox>
-
-
-            </Grid>
-        </GroupBox>
-
-        <Button x:Name="btnAddRule" Content="添加规则" HorizontalAlignment="Right" Margin="0,0,22,10" VerticalAlignment="Bottom" Height="45" Width="100" Click="btnAddRule_Click"/>
-        <Button x:Name="btnEditRule" Content="修改规则" HorizontalAlignment="Right" Margin="0,0,22,10" VerticalAlignment="Bottom" Height="45" Width="100" Click="btnEditRule_Click"/>
+                </Grid>
+            </GroupBox>
+        </StackPanel>
+        <DockPanel Margin="5" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right">
+            <Button Margin="5" x:Name="btnAddRule" Content="添加规则"  Height="45" Width="55" Click="btnAddRule_Click"/>
+            <Button Margin="5" x:Name="btnEditRule" Content="修改规则" Height="45" Width="55" Click="btnEditRule_Click"/>
+        </DockPanel>
 
     </Grid>
 </Window>

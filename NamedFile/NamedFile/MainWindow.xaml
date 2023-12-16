@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NamedFile"
         mc:Ignorable="d"
-        Title="MainWindow" Height="464" Width="856">
+        Title="MainWindow" Height="464" Width="856" MinHeight="350" MinWidth="550">
     
    
     <Grid>
@@ -26,10 +26,16 @@
                     <Separator></Separator>
                     <MenuItem Header="退出"></MenuItem>
                 </MenuItem>
-                
-                <MenuItem Header="选项">
-                    <MenuItem x:Name="miShowName" Header="显示文件名" IsCheckable="True"  Click="showFileNameClick"></MenuItem>
+                <MenuItem Header="规则">
+                    <MenuItem x:Name="miRuleNow" Header="当前规则" IsCheckable="True" IsChecked="True" ></MenuItem>
+                    <Separator></Separator>
+                    <MenuItem x:Name="miRulePinyin" Header="提取首字母" IsCheckable="True" IsChecked="False" ></MenuItem>
+                    
                 </MenuItem>
+                <MenuItem Header="选项">
+                    <MenuItem x:Name="miShowName" Header="仅显示文件名" IsCheckable="True"  Click="showFileNameClick"></MenuItem>
+                </MenuItem>
+                
                 <MenuItem Header="关于">
                     <MenuItem x:Name="miAbout" Header="关于" ></MenuItem>
 

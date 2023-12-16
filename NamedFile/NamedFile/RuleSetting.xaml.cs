@@ -30,8 +30,20 @@ namespace NamedFile
         public RuleSetting()
         {
             InitializeComponent();
+            MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+            this.Top =  mainWindow.Top + (mainWindow.Height - Height) / 2 ;
+            this.Left = mainWindow.Left + (mainWindow.Width - Width) / 2;
+            Title = "规则设置";
             InitRules();
             IsAdd(true);
+
+        }
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            if (ruleListboxIndex != -1)
+                listRule.IsEnabled = false;
+            else
+                listRule.IsEnabled = true;
         }
 
         void InitRules()
@@ -104,11 +116,11 @@ namespace NamedFile
             if (isAdd)
             {
                 btnAddRule.Visibility = Visibility.Visible;
-                btnEditRule.Visibility = Visibility.Hidden;
+                btnEditRule.Visibility = Visibility.Collapsed;
             }
             else
             {
-                btnAddRule.Visibility = Visibility.Hidden;
+                btnAddRule.Visibility = Visibility.Collapsed;
                 btnEditRule.Visibility = Visibility.Visible;
             }
         }
@@ -116,7 +128,8 @@ namespace NamedFile
         public void SelectOneRule(RuleInfo rule , int _ruleListboxIndex)
         {
             ruleListboxIndex = _ruleListboxIndex;   //当前已经添加的规则里的序号
-            //listRule.SelectedIndex = rule.no;   //让ListBox选择相应的面板
+           
+            
             IsAdd(false);
             ShowGroup(rule);    //刷新数据 
         }
@@ -125,7 +138,7 @@ namespace NamedFile
         {
             nowInfo = rule;
             if (nowGroup != null)
-                nowGroup.Visibility = Visibility.Hidden;
+                nowGroup.Visibility = Visibility.Collapsed;
             nowGroup = (GroupBox)mainGrid.FindName("groupBox" + nowInfo.ruleType);
             nowGroup.Visibility = Visibility.Visible;
             switch (nowInfo.ruleType)
@@ -259,5 +272,7 @@ namespace NamedFile
                     break;
             }
         }
+
+       
     }
 }
