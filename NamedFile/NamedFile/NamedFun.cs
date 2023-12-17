@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -25,11 +26,13 @@ namespace NamedFile
     }
     public class RuleInfoInsert : RuleInfo
     {
-        public int insertType = 1;  //插入模式，1：固定，2：源文件名
+        public int insertType = 1;  //插入模式，1：固定，2：源文件名,3:文件所在目录名
         public string insertFixStr="";
         public int placeType = 1;   //插入位置，1：前方，2：后方
-
+        public int insertIgnoreExp = 1;   //忽略扩展名字
         public RuleInfoInsert() { ruleType = RuleTypeEnum.Insert; ruleName = "插入"; }
+
+        
 
     }
     public class RuleInfoReplace : RuleInfo
@@ -65,28 +68,50 @@ namespace NamedFile
     internal class NamedFun
     {
         //根据插入规则返回合适的字符串
-        public static string InsertProcess(RuleInfoInsert rule,string nowStr,string sourceName)
+        public static string InsertProcess(RuleInfoInsert rule,string nowStr,string sourceName,string sourcePath)
         {
-            string outStr = nowStr;
-            string newStr = "";
+        
+
+            string outStr = "";
+            string replaceStr = nowStr;
+            string expName = "";
+            
+            if (rule.insertIgnoreExp == 1)
+                replaceStr = Functions.GetFileNameButExp(replaceStr, out expName);
+
+            //插入模式，1：固定，2：源文件名,3:文件所在目录名
             switch (rule.insertType)
             {
                 case 1:
-                    newStr = rule.insertFixStr;
+                    outStr = rule.insertFixStr;
                     break;
-                case 2: 
-                    newStr = sourceName; 
+                case 2:
+                    outStr = sourceName; 
+                    break;
+                case 3:
+                    string pathname = Path.GetDirectoryName(sourcePath);
+                    int idx = pathname.LastIndexOf('\\');
+                    if (idx != -1)
+                    {
+                        outStr = pathname.Substring(idx+1);
+                        break;
+                    }
+                    outStr = pathname;
                     break;
             }
+
+            //插入位置，1：前方，2：后方
             switch (rule.placeType)
             {
                 case 1:
-                    outStr = newStr + outStr;
+                    outStr = outStr + replaceStr;
                     break;
                 case 2:
-                    outStr = outStr + newStr;
+                    outStr = replaceStr + outStr;
                     break;
             }
+            if (rule.insertIgnoreExp == 1)
+                outStr += "." + expName;
             return outStr;
         }
 
@@ -144,16 +169,50 @@ namespace NamedFile
             switch (rule.deleteType) //插入模式，1：删除到结束，2：到位置
             {
                 case 1:
-                    if(rule.deleteL2R == 1)
-                        outStr = replaceStr.Substring (rule.deleteBegin-1);
+                    if (rule.deleteL2R == 1)
+                    {
+                        int end = rule.deleteBegin - 1;
+                        if (end > replaceStr.Length)
+                            end = replaceStr.Length;
+                        outStr = replaceStr.Substring(0, end);
+                    }
                     else
-                        outStr = replaceStr.Substring(replaceStr.Length - rule.deleteBegin-1);
+                    {
+                        int bstart = replaceStr.Length - rule.deleteBegin + 1;
+                        if (bstart < 0)
+                        {
+                            bstart = 0;
+                        }
+                        outStr = replaceStr.Substring(bstart);
+                    }
                     break;
                 case 2:
                     if (rule.deleteL2R == 1)
-                        outStr = replaceStr.Substring(rule.deleteBegin-1,rule.deleteToNum - rule.deleteBegin-1);
+                    {
+                        int bb = rule.deleteBegin - 1;
+                        if (bb > replaceStr.Length)
+                            bb = replaceStr.Length;
+                        int ee = rule.deleteToNum - 1;
+                        if (ee > replaceStr.Length)
+                            ee = replaceStr.Length - bb;
+                        string delstr = replaceStr.Substring(bb, ee);
+                        int idx = replaceStr.IndexOf(delstr);
+                        outStr = replaceStr.Substring(0, idx) + replaceStr.Substring(idx + delstr.Length);
+                    }
                     else
-                        outStr = replaceStr.Substring(replaceStr.Length - (rule.deleteToNum - rule.deleteBegin - 1), replaceStr.Length - rule.deleteBegin - 1);
+                    {
+                        int bb = replaceStr.Length - rule.deleteToNum + 1;
+                        if (bb < 0 )
+                            bb = 0;
+                        int ee = rule.deleteToNum - rule.deleteBegin;
+                        if (ee < 0)
+                            ee = 0;
+                        if (ee > replaceStr.Length - rule.deleteBegin)
+                            ee = replaceStr.Length - rule.deleteBegin;
+                        string delstr = replaceStr.Substring(bb, ee);
+                        int idx = replaceStr.LastIndexOf(delstr);
+                        outStr = replaceStr.Substring(0, idx) + replaceStr.Substring(idx + delstr.Length);
+                    }
                     break;
                 
             }
@@ -170,8 +229,7 @@ namespace NamedFile
             string outStr = "";
             string replaceStr = nowStr;
             string expName = "";
-            if (rule.uplowerExpType == 1)
-                replaceStr = Functions.GetFileNameButExp(replaceStr, out expName);
+            replaceStr = Functions.GetFileNameButExp(replaceStr, out expName);
 
             switch (rule.uplowerType) //模式，1：全部大写，2：首字母大写，3：全部小写，4：反转大小写
             {
@@ -187,7 +245,7 @@ namespace NamedFile
                 case 4:
                     for (int i = 0; i < replaceStr.Length - 1; i++)
                     {
-                        string str = replaceStr.Substring(i, i + 1);
+                        string str = replaceStr.Substring(i,  1);
                         if (str.ToUpper().Equals(str))
                             str = str.ToLower();
                         else 

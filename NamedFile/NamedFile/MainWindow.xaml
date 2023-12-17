@@ -87,12 +87,13 @@
                     <Button Name="btnRuleDown" Content="⬇" Margin="3" Height="40" Width="40"  FontSize="20"/>
 
                 </DockPanel>
-                <DockPanel Grid.Row="2"  Height="80" HorizontalAlignment="Center" >
-                    <Button Name="btnRuleAdd" Content="添加规则" Margin="3"  Height="70" Width="70" Click="btnRuleAdd_Click"/>
-                    <Button Name="btnRuleEdit" Content="修改规则" Margin="3"  Height="70" Width="70" Click="btnRuleEdit_Click"/>
-                    <Button Name="btnRuleDel" Content="删除规则" Margin="3"  Height="70" Width="70" Click="btnRuleDel_Click"/>
-
-                </DockPanel>
+                <UniformGrid  Grid.Row="2" Columns="3" MinHeight="40">
+                    
+                    <Button Name="btnRuleAdd" Content="添加规则" Margin="3" Click="btnRuleAdd_Click"/>
+                    <Button Name="btnRuleEdit" Content="修改规则" Margin="3"  Click="btnRuleEdit_Click"/>
+                    <Button Name="btnRuleDel" Content="删除规则" Margin="3"  Click="btnRuleDel_Click"/>
+                    <Button Name="btnRuleSave" Content="另存为" Margin="3" Visibility="Collapsed" />
+                </UniformGrid>
             </Grid>
             <GridSplitter Grid.Row="0" Grid.Column="0" Width="3" HorizontalAlignment="Right"/>
         </Grid>

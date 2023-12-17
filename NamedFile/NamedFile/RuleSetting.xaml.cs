@@ -146,9 +146,12 @@ namespace NamedFile
                 case RuleTypeEnum.Insert:
                     RuleInfoInsert rii = (RuleInfoInsert)nowInfo;
                     if (rii.insertType == 1) { insertTypeFix.IsChecked = true; tbInsertFixStr.Text = rii.insertFixStr; }
-                    else { insertTypeOri.IsChecked = true; }
+                    else if (rii.insertType == 2) { insertTypeOri.IsChecked = true; }
+                    else { insertTypeDir.IsChecked = true; }
                     if (rii.placeType == 1) { placeFront.IsChecked = true; }
                     else { placeBack.IsChecked = true; }
+                    cbInsertIgnExp.IsChecked = rii.insertIgnoreExp == 1;
+                    
                     break;
                 case RuleTypeEnum.Replace:
                     RuleInfoReplace rir = (RuleInfoReplace)nowInfo;
@@ -185,8 +188,8 @@ namespace NamedFile
                     switch (riul.uplowerExpType)
                     {
                         case 1: rbUpLowerExpIgnore.IsChecked = true; break;
-                        case 2: rbUpLowerExpSmall.IsChecked = true; break;
-                        case 3: rbUpLowerExpBig.IsChecked = true; break;
+                        case 2: rbUpLowerExpBig.IsChecked = true; break;
+                        case 3: rbUpLowerExpSmall.IsChecked = true; break;
                     }
 
                     break;
@@ -232,9 +235,14 @@ namespace NamedFile
                 case RuleTypeEnum.Insert:
                     RuleInfoInsert rii = (RuleInfoInsert)nowInfo;
                     if (insertTypeFix.IsChecked == true) { rii.insertType = 1; rii.insertFixStr = tbInsertFixStr.Text; }
-                    else { rii.insertType = 2; }
+                    else if (insertTypeOri.IsChecked == true) { rii.insertType = 2; }
+                    else {
+                        rii.insertType = 3;
+                    }
                     if (placeFront.IsChecked == true) { rii.placeType = 1; }
                     else { rii.placeType = 2; }
+                    rii.insertIgnoreExp = cbInsertIgnExp.IsChecked == true ? 1 : 0;
+                    
                     break;
 
                 case RuleTypeEnum.Replace:
@@ -261,8 +269,8 @@ namespace NamedFile
                     if (rbUpLowerAllSmall.IsChecked == true) riul.uplowerType = 3;
                     if (rbUpLowerAllFlip.IsChecked == true) riul.uplowerType = 4;
                     if (rbUpLowerExpIgnore.IsChecked == true) riul.uplowerExpType = 1;
-                    if (rbUpLowerExpSmall.IsChecked == true) riul.uplowerExpType = 2;
-                    if (rbUpLowerExpBig.IsChecked == true) riul.uplowerExpType = 3;
+                    if (rbUpLowerExpBig.IsChecked == true) riul.uplowerExpType = 2;
+                    if (rbUpLowerExpSmall.IsChecked == true) riul.uplowerExpType = 3;
                     break;
                 case RuleTypeEnum.PinYin:
                     RuleInfoPinYin ripy = (RuleInfoPinYin)nowInfo;

@@ -110,6 +110,8 @@ namespace NamedFile
 
                 if (listRuleInfo.Count == 0)
                     AddDefaultRule();
+                else
+                    PreviewList();
             }
 
         }
@@ -211,7 +213,7 @@ namespace NamedFile
                     switch (type)
                     {
                         case "RuleInfoInsert":
-                            nowStr = NamedFun.InsertProcess((RuleInfoInsert)rule, nowStr, fname);
+                            nowStr = NamedFun.InsertProcess((RuleInfoInsert)rule, nowStr, fname,filepath);
                             break;
                         case "RuleInfoReplace":
                             nowStr = NamedFun.ReplaceProcess((RuleInfoReplace)rule, nowStr);
@@ -322,6 +324,7 @@ namespace NamedFile
             RuleInfoInsert nowInfo = new RuleInfoInsert();
             nowInfo.insertType = 2;
             nowInfo.placeType = 1;
+            nowInfo.insertIgnoreExp = 0;
             AddRule(nowInfo);
         }
 

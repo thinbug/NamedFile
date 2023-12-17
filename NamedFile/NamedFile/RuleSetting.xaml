@@ -20,11 +20,13 @@
         <ListBox Name="listRule" Margin="5" Grid.Row="0" Grid.Column="0" d:ItemsSource="{d:SampleData ItemCount=5}" HorizontalAlignment="Left" Width="150" SelectionChanged="listRule_SelectionChanged" />
         <StackPanel Margin="5" Grid.Row="0" Grid.Column="1" >
             <GroupBox x:Name="groupBoxInsert" Grid.Row="0" Grid.Column="1" Header="插入" Visibility="Collapsed">
-                <Grid >
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"></RowDefinition>
                         <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
                         <RowDefinition Height="5"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
                         <RowDefinition Height="30"></RowDefinition>
                         <RowDefinition Height="30"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
@@ -37,9 +39,11 @@
                     <RadioButton Grid.Row="0" Grid.Column="1" x:Name="insertTypeFix" GroupName="inserttype" IsChecked="True" VerticalAlignment="Center" >固定文本</RadioButton>
                     <TextBox Grid.Row="0" Grid.Column="1" x:Name="tbInsertFixStr" TextWrapping="Wrap" Text="TextBox" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="108,0,0,0" />
                     <RadioButton Grid.Row="1" Grid.Column="1" x:Name="insertTypeOri" GroupName="inserttype" VerticalAlignment="Center" HorizontalAlignment="Left"   >原文件名</RadioButton>
-                    <Label Grid.Row="3" Grid.Column="0" Content="位置 : " HorizontalAlignment="Left" VerticalAlignment="Center" />
-                    <RadioButton Grid.Row="3" Grid.Column="1" x:Name="placeFront" GroupName="placegroup" IsChecked="True" VerticalAlignment="Center" >字符串前</RadioButton>
-                    <RadioButton Grid.Row="4" Grid.Column="1" Name="placeBack" GroupName="placegroup" VerticalAlignment="Center"  >字符串后</RadioButton>
+                    <RadioButton Grid.Row="2" Grid.Column="1" x:Name="insertTypeDir" GroupName="inserttype" VerticalAlignment="Center" HorizontalAlignment="Left"   >所在文件夹名</RadioButton>
+                    <Label Grid.Row="4" Grid.Column="0" Content="位置 : " HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    <RadioButton Grid.Row="4" Grid.Column="1" x:Name="placeFront" GroupName="placegroup" IsChecked="True" VerticalAlignment="Center" >字符串前</RadioButton>
+                    <RadioButton Grid.Row="5" Grid.Column="1" Name="placeBack" GroupName="placegroup" VerticalAlignment="Center"  >字符串后</RadioButton>
+                    <CheckBox Grid.Row="6" Grid.Column="1" x:Name="cbInsertIgnExp"   Margin="0,0,0,0" VerticalAlignment="Center" >忽略扩展名</CheckBox>
                 </Grid>
             </GroupBox>
             <GroupBox x:Name="groupBoxReplace" Grid.Row="0" Grid.Column="1" Header="替换" Visibility="Collapsed">
@@ -122,8 +126,8 @@
                     <RadioButton Grid.Row="2" Grid.Column="0" x:Name="rbUpLowerAllSmall" GroupName="uplowergroup"  VerticalAlignment="Center">全部小写</RadioButton>
                     <RadioButton Grid.Row="3" Grid.Column="0" x:Name="rbUpLowerAllFlip" GroupName="uplowergroup"  VerticalAlignment="Center">反转大小写</RadioButton>
                     <RadioButton Grid.Row="0" Grid.Column="1" x:Name="rbUpLowerExpIgnore" GroupName="uplowerexpgroup" Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="True" >忽略扩展名</RadioButton>
-                    <RadioButton Grid.Row="1" Grid.Column="1" x:Name="rbUpLowerExpSmall"   GroupName="uplowerexpgroup" Margin="0,0,0,0" VerticalAlignment="Center" >扩展名小写</RadioButton>
-                    <RadioButton Grid.Row="2" Grid.Column="1" x:Name="rbUpLowerExpBig"   GroupName="uplowerexpgroup" Margin="0,0,0,0" VerticalAlignment="Center" >扩展名大写</RadioButton>
+                    <RadioButton Grid.Row="1" Grid.Column="1" x:Name="rbUpLowerExpBig"   GroupName="uplowerexpgroup" Margin="0,0,0,0" VerticalAlignment="Center" >扩展名大写</RadioButton>
+                    <RadioButton Grid.Row="2" Grid.Column="1" x:Name="rbUpLowerExpSmall"   GroupName="uplowerexpgroup" Margin="0,0,0,0" VerticalAlignment="Center" >扩展名小写</RadioButton>
 
 
                 </Grid>
