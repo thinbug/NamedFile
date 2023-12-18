@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NamedFile"
         mc:Ignorable="d"
-        Title="MainWindow" Height="464" Width="856" MinHeight="350" MinWidth="550">
+        Title="MainWindow" Height="464" Width="856" MinHeight="350" MinWidth="550" Drop="Window_Drop" AllowDrop="True">
     
    
     <Grid>
@@ -57,6 +57,13 @@
                 <ColumnDefinition Width="auto" MinWidth="250"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <ListView x:Name="lvFileList" Grid.Column="0">
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Name="MenuItemFileAdd" Header="添加文件"  Click="OnFileAddClick" />
+                        <MenuItem Name="MenuItemFileRemove" Header="移除文件"  Click="OnFileRemoveClick"/>
+                        <MenuItem Name="MenuItemFileClear" Header="清空所有"  Click="OnFileClearClick"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
                 <ListView.View>
                     <GridView x:Name="lvFileListView" >
                         <GridViewColumn x:Name="gvcSPath" Header="原文件路径"  DisplayMemberBinding="{Binding sourcePath}" />
@@ -66,7 +73,9 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-
+            <Label Name="labTipHere" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="36" Foreground="#4C000000" >
+                可以拖拽文件列表到此
+            </Label>
             <Grid Margin="0,0,0,0" Grid.Column="1" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"></RowDefinition>

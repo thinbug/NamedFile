@@ -82,10 +82,58 @@ namespace NamedFile
                     Console.WriteLine("错误:" + fd.sourcePath);
                 }
             }
-            PreviewList();
+            UpdatePreviewList();
+        }
+
+        void GetFiles(string[] filesname)
+        {
+            listSelectFiles = new List<FileInfoData>();
+            for (int i = 0; i < filesname.Length; i++)
+            {
+                FileInfoData mydata = new FileInfoData
+                {
+                    sourcePath = filesname[i],
+                    sourceName = Functions.GetFileName(filesname[i]),
+                    newPath = "",
+                    newName = ""
+                };
+                listSelectFiles.Add(mydata);
+            }
+            lvFileList.ItemsSource = listSelectFiles;
+
+            if (listRuleInfo.Count == 0)
+                AddDefaultRule();
+            else
+                UpdatePreviewList();
         }
 
         private void btnGetFiles_Click(object sender, RoutedEventArgs e)
+        {
+            GetFileDialog();
+        }
+        private void OnFileAddClick(object sender, RoutedEventArgs e)
+        {
+            GetFileDialog();
+        }
+        private void OnFileRemoveClick(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < lvFileList.Items.Count; i++)
+            {
+                if (lvFileList.SelectedItems.Contains(lvFileList.Items[i]))
+                {
+                    int indexDel = lvFileList.Items.IndexOf(lvFileList.Items[i]);
+                    //lvFileList.Items.RemoveAt(indexDel);//删除
+                    listSelectFiles.RemoveAt(indexDel);
+                }
+            }
+            UpdatePreviewList();
+        }
+        private void OnFileClearClick(object sender, RoutedEventArgs e)
+        {
+            listSelectFiles.Clear();
+            UpdatePreviewList();
+        }
+        void GetFileDialog()
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Multiselect = true;//该值确定是否可以选择多个文件
@@ -93,27 +141,26 @@ namespace NamedFile
             dialog.Filter = "所有文件(*.*)|*.*";
             if (dialog.ShowDialog() == true)
             {
-                listSelectFiles = new List<FileInfoData>();
+
                 string[] filesname = dialog.FileNames;
-                for (int i = 0; i < filesname.Length; i++)
-                {
-                    FileInfoData mydata = new FileInfoData
-                    {
-                        sourcePath = filesname[i],
-                        sourceName = Functions.GetFileName(filesname[i]),
-                        newPath = "",
-                        newName = ""
-                    };
-                    listSelectFiles.Add(mydata);
-                }
-                lvFileList.ItemsSource = listSelectFiles;
-
-                if (listRuleInfo.Count == 0)
-                    AddDefaultRule();
-                else
-                    PreviewList();
+                GetFiles(filesname);
             }
-
+        }
+        private void Window_Drop(object sender, DragEventArgs e)
+        {
+            string dropFile = "Drop";
+            if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
+            {
+                int count = ((System.Array)e.Data.GetData(System.Windows.DataFormats.FileDrop)).Length;
+                List<string> filesname = new List<string>();
+                for (int i = 0; i < count; i++)
+                {
+                    string f = ((System.Array)e.Data.GetData(System.Windows.DataFormats.FileDrop)).GetValue(i).ToString();
+                    filesname.Add(f);
+                    
+                }
+                GetFiles(filesname.ToArray());
+            }
         }
 
 
@@ -203,14 +250,17 @@ namespace NamedFile
             return showtxt;
         }
 
-
         //根据规则刷新新的预览文件列表
-        void PreviewList()
+        void UpdatePreviewList()
         {
             if (listSelectFiles == null || listSelectFiles.Count == 0)
+            {
+                lvFileList.Items.Refresh();
+                labTipHere.Visibility = Visibility.Visible;
                 return;
-            Console.WriteLine("开始PreviewList");
-            //lbOutputs.Items.Clear();
+            }
+            labTipHere.Visibility = Visibility.Collapsed;
+            
 
             for (int i = 0; i < listSelectFiles.Count; i++)
             {
@@ -254,7 +304,7 @@ namespace NamedFile
             lvFileList.Items.Refresh();
 
         }
-
+        
 
 
 
@@ -329,7 +379,7 @@ namespace NamedFile
         {
             lbRules.Items.RemoveAt(index);
             listRuleInfo.RemoveAt(index);
-            PreviewList();
+            UpdatePreviewList();
         }
 
 
@@ -349,14 +399,14 @@ namespace NamedFile
             listRuleInfo.Add(nowInfo);
             string showtxt = FormatRuleString(nowInfo);
             lbRules.Items.Add(showtxt);
-            PreviewList();
+            UpdatePreviewList();
         }
         //修改列表里的现有规则，从修改界面回调回来的。
         public void EditRule(RuleInfo nowInfo, int listRoleNo)
         {
             string showtxt = FormatRuleString(nowInfo);
             lbRules.Items[listRoleNo] = showtxt;
-            PreviewList();
+            UpdatePreviewList();
         }
 
         //点击添加规则按钮
@@ -425,8 +475,9 @@ namespace NamedFile
 
 
 
+
+
         #endregion
 
-        
     }
 }
