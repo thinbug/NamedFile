@@ -158,6 +158,39 @@
 
                 </Grid>
             </GroupBox>
+            <GroupBox x:Name="groupBoxSerialize" Header="序列化" Grid.Row="0" Grid.Column="1" Visibility="Collapsed">
+                <Grid Margin="0,0,0,0" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="110"></ColumnDefinition>
+                        <ColumnDefinition Width="50"></ColumnDefinition>
+                        <ColumnDefinition Width="20"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" Content="开始数字 : " HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBox x:Name="tbSerializeBNumber" Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Margin="0,0,0,0" />
+                    <Label Grid.Row="1" Grid.Column="0" Content="增量 : " HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="1" x:Name="tbSerializeAdd" Grid.Column="1" TextWrapping="Wrap" Text="1" Margin="0,0,0,0" VerticalAlignment="Center" />
+
+                    <CheckBox Grid.Row="2" Grid.Column="0" x:Name="cbSerializeFullZero"   Margin="0,0,0,0" VerticalAlignment="Center" >填充0补足长度 :</CheckBox>
+                    <TextBox Grid.Row="2" x:Name="tbSerializeZero" Grid.Column="1" TextWrapping="Wrap" Text="1" Margin="0,0,0,0" VerticalAlignment="Center" />
+                    <CheckBox Grid.Row="3" Grid.Column="0" x:Name="cbSerializeIgnExp"   Margin="0,0,0,0" VerticalAlignment="Center" >忽略扩展名</CheckBox>
+                    <RadioButton Grid.Row="0" Grid.Column="3" x:Name="rbSerializeFront" GroupName="placegroup" IsChecked="True" VerticalAlignment="Center" >字符串前</RadioButton>
+                    <RadioButton Grid.Row="1" Grid.Column="3" Name="rbSerializeInsertBack" GroupName="placegroup" VerticalAlignment="Center"  >字符串后</RadioButton>
+                    <RadioButton Grid.Row="2" Grid.Column="3" Name="rbSerializeInsertPlace" GroupName="placegroup" VerticalAlignment="Center"  >位置 :</RadioButton>
+                    <TextBox Grid.Row="2" Grid.Column="3" x:Name="tbSerializeInsertPlace"  TextWrapping="Wrap" Text="1" Margin="60,0,30,0" VerticalAlignment="Center" />
+
+
+                </Grid>
+            </GroupBox>
         </StackPanel>
         <DockPanel Margin="5" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right">
             <Button Margin="5" x:Name="btnAddRule" Content="添加规则"  Height="45" Width="55" Click="btnAddRule_Click"/>

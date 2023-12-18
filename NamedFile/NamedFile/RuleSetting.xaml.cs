@@ -56,6 +56,7 @@ namespace NamedFile
             RulesType_Delete();
             RulesType_UpLower();
             RulesType_Pinyin();
+            RulesType_Serialize();
         }
         void RulesType_Insert()
         {
@@ -98,10 +99,17 @@ namespace NamedFile
             rulesDictEnum.Add(rule.ruleType, rule);
             listRule.Items.Add(rule.ToString());
         }
+        void RulesType_Serialize()
+        {
+            RuleInfoSerialize rule = new RuleInfoSerialize();
+            rule.no = listRule.Items.Count;
+            rulesDict.Add(rule.no, rule);
+            rulesDictEnum.Add(rule.ruleType, rule);
+            listRule.Items.Add(rule.ToString());
+        }
 
-      
 
-        
+
         //选择一个类型后,显示数据
         private void listRule_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -202,6 +210,20 @@ namespace NamedFile
                     }
                     cbPinYinIgnoreExp.IsChecked = ripy.pinyinIgnoreExp == 1;
                     break;
+                case RuleTypeEnum.Serialize:
+                    RuleInfoSerialize ris = (RuleInfoSerialize)nowInfo;
+                    tbSerializeBNumber.Text = ris.serializeBegin.ToString();
+                    tbSerializeAdd.Text = ris.serializeAdd.ToString();
+                    cbSerializeFullZero.IsChecked = ris.serializeFullZero == 1;
+                    tbSerializeZero.Text = ris.serializeFullZeroNumber.ToString();
+                    switch (ris.serializePlaceType)
+                    {
+                        case 1: rbSerializeFront.IsChecked = true; break;
+                        case 2: rbSerializeInsertBack.IsChecked = true; break;
+                        case 3: rbSerializeInsertPlace.IsChecked = true; tbSerializeInsertPlace.Text = ris.serializePlaceNumber.ToString(); break;
+                    }
+                    cbSerializeIgnExp.IsChecked = ris.serializeIgnoreExp == 1;
+                    break;
             }
         }
 
@@ -277,6 +299,19 @@ namespace NamedFile
                     if (rbPinYinAll.IsChecked == true) ripy.pinyinType = 1;
                     if (rbPinYinFirst.IsChecked == true) ripy.pinyinType = 2;
                     ripy.pinyinIgnoreExp = cbPinYinIgnoreExp.IsChecked == true ? 1 : 0;
+                    break;
+
+                case RuleTypeEnum.Serialize:
+                    RuleInfoSerialize ris = (RuleInfoSerialize)nowInfo;
+                    ris.serializeBegin = int.Parse(tbSerializeBNumber.Text);
+                    ris.serializeAdd = int.Parse(tbSerializeAdd.Text);
+                    ris.serializeFullZero = cbSerializeFullZero.IsChecked == true ? 1 : 0;
+                    ris.serializeFullZeroNumber = int.Parse(tbSerializeZero.Text);
+                    if (rbSerializeFront.IsChecked == true) ris.serializePlaceType = 1;
+                    if (rbSerializeInsertBack.IsChecked == true) ris.serializePlaceType = 2;
+                    if (rbSerializeInsertPlace.IsChecked == true) ris.serializePlaceType = 3;
+                    ris.serializePlaceNumber = int.Parse(tbSerializeInsertPlace.Text);
+                    ris.serializeIgnoreExp = cbSerializeIgnExp.IsChecked == true ? 1 : 0;
                     break;
             }
         }

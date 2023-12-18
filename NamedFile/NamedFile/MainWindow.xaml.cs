@@ -184,6 +184,18 @@ namespace NamedFile
                     if (ripy.pinyinIgnoreExp == 1)
                         showtxt += "," + "忽略扩展名";
                     break;
+                case RuleTypeEnum.Serialize:
+                    RuleInfoSerialize ris = (RuleInfoSerialize)nowInfo;
+                    string stype = "";
+                    switch (ris.serializePlaceType)
+                    {
+                        case 1: stype = "插入前面"; break;
+                        case 2: stype = "插入后面"; break;
+                    }
+                    showtxt = showrule + " - " + stype;
+                    if (ris.serializeIgnoreExp == 1)
+                        showtxt += "," + "忽略扩展名";
+                    break;
                 default:
                     showtxt = "Error : " + nowInfo.ruleType.ToString();
                     break;
@@ -226,6 +238,9 @@ namespace NamedFile
                             break;
                         case "RuleInfoPinYin":
                             nowStr = NamedFun.PinYinProcess((RuleInfoPinYin)rule, nowStr);
+                            break;
+                        case "RuleInfoSerialize":
+                            nowStr = NamedFun.SerializeProcess((RuleInfoSerialize)rule, nowStr,i);
                             break;
                     }
                 }

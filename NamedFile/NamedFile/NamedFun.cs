@@ -12,7 +12,7 @@ namespace NamedFile
     public enum RuleTypeEnum
     {
         Insert = 0,
-        Replace = 1, Delete = 2, UpLower = 3, PinYin = 4,
+        Replace = 1, Delete = 2, UpLower = 3, PinYin = 4, Serialize = 5
     }
     public class RuleInfo
     {
@@ -65,6 +65,18 @@ namespace NamedFile
         public int pinyinIgnoreExp = 1;   //忽略扩展名字
         public RuleInfoPinYin() { ruleType = RuleTypeEnum.PinYin; ruleName = "拼音"; }
     }
+    public class RuleInfoSerialize : RuleInfo
+    {
+        public int serializeBegin = 1;  //开始数值
+        public int serializeAdd = 1;   //增量数字
+        public int serializeFullZero = 1;  //填充0开关
+        public int serializeFullZeroNumber = 2;  //填充几个0
+        public int serializeIgnoreExp = 1;   //忽略扩展名字
+        public int serializePlaceType = 1;   //插入位置，1：前方，2：后方,3:位置
+        public int serializePlaceNumber = 1;    //如果是3，插入位置
+        public RuleInfoSerialize() { ruleType = RuleTypeEnum.Serialize; ruleName = "序列化"; }
+    }
+    
     internal class NamedFun
     {
         //根据插入规则返回合适的字符串
@@ -290,6 +302,44 @@ namespace NamedFile
             if (rule.pinyinIgnoreExp == 1)
                 outStr += "." + expName;
             
+            return outStr;
+        }
+        //拼音
+        public static string SerializeProcess(RuleInfoSerialize rule, string nowStr,int no)
+        {
+            string outStr = "";
+            string replaceStr = nowStr;
+            string expName = "";
+            if (rule.serializeIgnoreExp == 1)
+                replaceStr = Functions.GetFileNameButExp(replaceStr, out expName);
+
+            string strNum = "";
+            int bnum = rule.serializeBegin + (rule.serializeAdd * no);
+            strNum = bnum.ToString();
+            if (rule.serializeFullZero == 1)
+            {
+                strNum = bnum.ToString().PadLeft(rule.serializeFullZeroNumber, '0'); ;
+            }
+            switch (rule.serializePlaceType) //模式，1：插入前面，2：后面，3：位置
+            {
+                case 1:
+                    outStr = strNum + replaceStr;
+                    break;
+                case 2:
+                    outStr = replaceStr + strNum;
+                    break;
+                case 3:
+                    int bstr = rule.serializePlaceNumber - 1;
+                    if(bstr > replaceStr.Length)
+                        bstr = replaceStr.Length;
+                    outStr = replaceStr.Substring(0, bstr) + strNum+ replaceStr.Substring(bstr);
+                    break;
+            }
+
+            //忽略扩展名字
+            if (rule.serializeIgnoreExp == 1)
+                outStr += "." + expName;
+
             return outStr;
         }
     }
