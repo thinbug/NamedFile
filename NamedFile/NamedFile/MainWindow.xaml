@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NamedFile"
         mc:Ignorable="d"
-        Title="MainWindow" Height="464" Width="856" MinHeight="350" MinWidth="550" Drop="Window_Drop" AllowDrop="True">
+        Title="MainWindow" Height="464" Width="856" MinHeight="350" MinWidth="550" Drop="Window_Drop" AllowDrop="True" WindowStartupLocation="CenterScreen">
     
    
     <Grid>
