@@ -9,6 +9,7 @@
     
    
     <Grid>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
@@ -82,15 +83,36 @@
                     <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="auto" ></RowDefinition>
                 </Grid.RowDefinitions>
-                <ListBox x:Name="lbRules" Grid.Row="0" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,0,0" SelectionChanged="lbRules_SelectionChanged" MouseDown="lbRules_MouseDown" MouseDoubleClick="lbRules_MouseDoubleClick" >
-                    <ListBox.ContextMenu>
+
+                <ListView x:Name="lvRules" Grid.Column="1"  AlternationCount="1000000"  SelectionChanged="lbRules_SelectionChanged" MouseDown="lbRules_MouseDown" MouseDoubleClick="lbRules_MouseDoubleClick" >
+                    <ListView.Resources>
+                        <local:IndexConverter x:Key="IndexConverterNum"  AddValue="1"/>
+                    </ListView.Resources>
+                    <ListView.ContextMenu>
                         <ContextMenu>
                             <MenuItem Name="MenuItemRuleAdd" Header="添加"  Click="OnRuleMenuClick" />
                             <MenuItem Name="MenuItemRuleEdit" Header="修改"  Click="OnRuleMenuClick" />
                             <MenuItem Name="MenuItemRuleDel" Header="删除"  Click="OnRuleMenuClick"/>
                         </ContextMenu>
-                    </ListBox.ContextMenu>
-                </ListBox>
+                    </ListView.ContextMenu>
+                    <ListView.View>
+                        <GridView x:Name="lvRuleListView" >
+                            <GridViewColumn Header="顺序">
+                                <GridViewColumn.CellTemplate >
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding isEnable}">
+                                            <TextBlock Text="{Binding (ItemsControl.AlternationIndex) ,
+       RelativeSource={RelativeSource AncestorType=ListViewItem},Converter={StaticResource IndexConverterNum}}" />
+                                        </CheckBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn x:Name="gvcRuleName" Header="规则"  DisplayMemberBinding="{Binding ruleName}" />
+                            <GridViewColumn Width="auto" x:Name="gvcDesc" Header="描述"  DisplayMemberBinding="{Binding ruleDesc}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                
                 <DockPanel Grid.Row="1"  Height="50" HorizontalAlignment="Center">
                     <Button Name="btnRuleUp" Content="⬆" Margin="3" Height="40" Width="40"  FontSize="20"/>
                     <Button Name="btnRuleDown" Content="⬇" Margin="3" Height="40" Width="40"  FontSize="20"/>

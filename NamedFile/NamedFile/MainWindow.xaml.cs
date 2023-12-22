@@ -3,6 +3,7 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -28,13 +29,44 @@ namespace NamedFile
         public string newPath { get; set; }
         public string newName { get; set; }
     }
+
+    public class RuleInfoData
+    {
+        public bool isEnable { get; set; }
+        public string ruleName { get; set; }
+        public string ruleDesc { get; set; }
+    }
+    public class IndexConverter : IValueConverter
+    {
+        public int AddValue { get; set; }
+
+        public object Convert(object value, Type TargetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            int curentvalue = (int)(value);
+            curentvalue += AddValue;
+
+            return curentvalue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            int curentvalue = (int)(value);
+            curentvalue -= AddValue;
+            return curentvalue;
+
+        }
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<FileInfoData> listSelectFiles;
-        List<RuleInfo> listRuleInfo;
+    
+        List<FileInfoData> listSelectFiles;//当前组件绑定数据
+
+        List<RuleInfo> listRuleInfo;    //当前规则详细信息
+        public List<RuleInfoData> listRuleDatas; //当前组件绑定数据
 
         public bool justFilpath = false;
 
@@ -44,9 +76,13 @@ namespace NamedFile
 
         public MainWindow()
         {
+            listRuleInfo = new List<RuleInfo>();
+            listRuleDatas = new List<RuleInfoData>();
+
             InitializeComponent();
 
-            listRuleInfo = new List<RuleInfo>();
+            lvRules.ItemsSource = listRuleDatas;
+            
             SetColShowPath(justFilpath);
             string ver = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
             this.Title = appName + " - " + ver;
@@ -339,7 +375,7 @@ namespace NamedFile
         private void OnRuleMenuClick(object sender, RoutedEventArgs e)
         {
             string menuname = ((MenuItem)sender).Name;
-            int index = lbRules.SelectedIndex;
+            int index = lvRules.SelectedIndex;
 
             switch (menuname)
             {
@@ -377,8 +413,10 @@ namespace NamedFile
         //删除规则
         void DeleteRule(int index)
         {
-            lbRules.Items.RemoveAt(index);
+            //lvRules.Items.RemoveAt(index);
             listRuleInfo.RemoveAt(index);
+            listRuleDatas.RemoveAt(index);
+            lvRules.Items.Refresh();
             UpdatePreviewList();
         }
 
@@ -397,15 +435,20 @@ namespace NamedFile
         public void AddRule(RuleInfo nowInfo)
         {
             listRuleInfo.Add(nowInfo);
+            
             string showtxt = FormatRuleString(nowInfo);
-            lbRules.Items.Add(showtxt);
+            listRuleDatas.Add(new RuleInfoData { isEnable = true, ruleName = nowInfo.ruleName , ruleDesc = showtxt });
+            lvRules.Items.Refresh();
+
             UpdatePreviewList();
         }
         //修改列表里的现有规则，从修改界面回调回来的。
         public void EditRule(RuleInfo nowInfo, int listRoleNo)
         {
             string showtxt = FormatRuleString(nowInfo);
-            lbRules.Items[listRoleNo] = showtxt;
+            //lvRules.Items[listRoleNo] = showtxt;
+            listRuleDatas[listRoleNo].ruleDesc = showtxt;
+            lvRules.Items.Refresh();
             UpdatePreviewList();
         }
 
@@ -417,7 +460,7 @@ namespace NamedFile
         //点击编辑规则按钮
         private void btnRuleEdit_Click(object sender, RoutedEventArgs e)
         {
-            int index = lbRules.SelectedIndex;
+            int index = lvRules.SelectedIndex;
             if (index == -1)
                 return;
             ReadyEditRule(index);
@@ -425,7 +468,7 @@ namespace NamedFile
         //双击修改规则
         private void lbRules_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            int index = lbRules.SelectedIndex;
+            int index = lvRules.SelectedIndex;
             if (index == -1)
                 return;
             ReadyEditRule(index);
@@ -433,7 +476,7 @@ namespace NamedFile
         //点击删除规则按钮
         private void btnRuleDel_Click(object sender, RoutedEventArgs e)
         {
-            int index = lbRules.SelectedIndex;
+            int index = lvRules.SelectedIndex;
 
             if (index == -1)
                 return;
@@ -447,12 +490,12 @@ namespace NamedFile
         //取消选择或者鼠标其他地方点击关闭选择
         private void lbRules_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            lbRules.SelectedIndex = -1;
+            lvRules.SelectedIndex = -1;
         }
         //检测是否激活编辑和删除按钮
         void CheckEditDelShow()
         {
-            int index = lbRules.SelectedIndex;
+            int index = lvRules.SelectedIndex;
 
             if (index == -1)
             {
