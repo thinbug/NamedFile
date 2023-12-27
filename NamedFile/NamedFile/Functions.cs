@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,36 @@ namespace NamedFile
                 return filename.Substring(0, index);
             }
             return filename;
+        }
+
+        /// <summary>
+        /// 获得地址所在文件的所有字符信息
+        /// </summary>
+        public static string GetFileText(string path)
+        {
+            return System.IO.File.ReadAllText(path);
+        }
+
+        public static void StreamWriter(string path, string data)
+        {
+            try
+            {
+                string forder = System.IO.Path.GetDirectoryName(path);
+                bool exists = System.IO.Directory.Exists(forder);
+                if (!exists)
+                {
+                    System.IO.Directory.CreateDirectory(forder);
+                }
+
+                System.IO.StreamWriter sw = new System.IO.StreamWriter(path);
+                sw.Write(data);
+                //关闭StreamWriter
+                sw.Close();
+            }
+            catch (System.Exception ee)
+            {
+                Console.WriteLine("文件写入失败:" + path + " Error:" + ee.Message);
+            }
         }
     }
 }

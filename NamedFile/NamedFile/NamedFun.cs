@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NPinyin;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -6,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 
 namespace NamedFile
 {
@@ -342,5 +346,162 @@ namespace NamedFile
 
             return outStr;
         }
+
+        public static string FormatRuleString(RuleInfo nowInfo)
+        {
+            string showrule = nowInfo.ruleName;
+            string showtxt;
+            switch (nowInfo.ruleType)
+            {
+                case RuleTypeEnum.Insert:
+                    RuleInfoInsert rii = (RuleInfoInsert)nowInfo;
+                    string fixstr = "";
+                    if (rii.insertType == 1) fixstr = "固定文本:" + rii.insertFixStr;
+                    else fixstr = "原文件";
+                    showtxt = showrule + " - " + fixstr + ",位置:" + rii.placeType;
+                    break;
+
+                case RuleTypeEnum.Replace:
+                    RuleInfoReplace rir = (RuleInfoReplace)nowInfo;
+                    string rtype = "";
+                    if (rir.replaceType == 1) rtype = "所有";
+                    else if (rir.replaceType == 2) rtype = "最前一个";
+                    else if (rir.replaceType == 3) rtype = "最后一个";
+                    showtxt = showrule + " - " + rtype + "," + rir.replaceFindText + "->" + rir.replaceNewText;
+                    if (rir.replaceIgnoreExp == 1)
+                        showtxt += "," + "忽略扩展名";
+                    break;
+                case RuleTypeEnum.Delete:
+                    RuleInfoDelete rid = (RuleInfoDelete)nowInfo;
+                    string dtype = "";
+                    if (rid.deleteType == 1) dtype = "到结束";
+                    if (rid.deleteType == 2) dtype = "到位置：" + rid.deleteToNum.ToString();
+
+                    showtxt = showrule + " - " + dtype;
+                    if (rid.deleteIgnoreExp == 1) showtxt += "," + "忽略扩展名";
+                    if (rid.deleteL2R == 1) showtxt += "," + "从左到右";
+                    else showtxt += "," + "从右到左";
+                    break;
+                case RuleTypeEnum.UpLower:
+                    RuleInfoUpLower riul = (RuleInfoUpLower)nowInfo;
+
+                    string ultype = "";
+                    switch (riul.uplowerType)
+                    {
+                        case 1: ultype = "全部大写"; break;
+                        case 2: ultype = "首字母大写"; break;
+                        case 3: ultype = "全部小写"; break;
+                        case 4: ultype = "反转大小写"; break;
+                    }
+                    string exptype = "";
+                    switch (riul.uplowerExpType)
+                    {
+                        case 1: exptype = "忽略扩展名"; break;
+                        case 2: exptype = "扩展名小写"; break;
+                        case 3: exptype = "扩展名大写"; break;
+                    }
+                    showtxt = showrule + " - " + ultype + "," + exptype;
+                    break;
+                case RuleTypeEnum.PinYin:
+                    RuleInfoPinYin ripy = (RuleInfoPinYin)nowInfo;
+                    string pytype = "";
+                    switch (ripy.pinyinType)
+                    {
+                        case 1: pytype = "转换全拼"; break;
+                        case 2: pytype = "转首字母"; break;
+                    }
+                    showtxt = showrule + " - " + pytype;
+                    if (ripy.pinyinIgnoreExp == 1)
+                        showtxt += "," + "忽略扩展名";
+                    break;
+                case RuleTypeEnum.Serialize:
+                    RuleInfoSerialize ris = (RuleInfoSerialize)nowInfo;
+                    string stype = "";
+                    switch (ris.serializePlaceType)
+                    {
+                        case 1: stype = "插入前面"; break;
+                        case 2: stype = "插入后面"; break;
+                    }
+                    showtxt = showrule + " - " + stype;
+                    if (ris.serializeIgnoreExp == 1)
+                        showtxt += "," + "忽略扩展名";
+                    break;
+                default:
+                    showtxt = "Error : " + nowInfo.ruleType.ToString();
+                    break;
+            }
+            return showtxt;
+        }
+
+        //根据当前ruleinfo列表获得ruleinfodata
+        public static List<RuleInfoData> GetRuleListDatas(List<RuleInfo> infos)
+        {
+            List<RuleInfoData> datas = new List<RuleInfoData>();
+            for (int i = 0; i < infos.Count; i++)
+            {
+                RuleInfo nowInfo = infos[i];
+                RuleInfoData data = GetRuleData(nowInfo);
+                datas.Add(data);
+            }
+            return datas;
+        }
+
+        public static RuleInfoData GetRuleData(RuleInfo nowInfo)
+        {
+            string showtxt = NamedFun.FormatRuleString(nowInfo);
+            RuleInfoData d = (new RuleInfoData { isEnable = true, ruleName = nowInfo.ruleName, ruleDesc = showtxt });
+            return d;
+        }
+
+        public static void SaveRules(string ruleFile, List<RuleInfo> list)
+        {
+            string str = JsonConvert.SerializeObject(list);
+            Functions.StreamWriter(ruleFile, str);
+        }
+
+        public static List<RuleInfo> ReadRules(string ruleFile)
+        {
+            List<RuleInfo> list = new List<RuleInfo>();
+            string str = Functions.GetFileText(ruleFile);
+            //这里要按照不同的类型去解析
+
+            JArray jary = (JArray)Newtonsoft.Json.JsonConvert.DeserializeObject(str);
+            for (int i = 0; i < jary.Count; i++)
+            {
+                RuleInfo info = null;
+                RuleTypeEnum nowType = jary[i]["ruleType"].ToObject<RuleTypeEnum>();
+                switch (nowType)
+                {
+                    case RuleTypeEnum.Insert:
+                        info = JsonConvert.DeserializeObject<RuleInfoInsert>(jary[i].ToString());
+                        break;
+                    case RuleTypeEnum.Replace:
+                        info = JsonConvert.DeserializeObject<RuleInfoReplace>(jary[i].ToString());
+                        break;
+                    case RuleTypeEnum.Delete:
+                        info = JsonConvert.DeserializeObject<RuleInfoDelete>(jary[i].ToString());
+                        break;
+                    case RuleTypeEnum.UpLower:
+                        info = JsonConvert.DeserializeObject<RuleInfoUpLower>(jary[i].ToString());
+                        break;
+                    case RuleTypeEnum.PinYin:
+                        info = JsonConvert.DeserializeObject<RuleInfoPinYin>(jary[i].ToString());
+                        break;
+                    case RuleTypeEnum.Serialize:
+                        info = JsonConvert.DeserializeObject<RuleInfoSerialize>(jary[i].ToString());
+                        break;
+                }
+        
+
+                //list = JsonConvert.DeserializeObject<List<RuleInfo>>(str);
+                //RuleInfo info = JsonConvert.DeserializeObject<RuleInfo>(jary[i].ToString());
+                list.Add(info);
+            }
+            return list;
+        }
+
+        
     }
+
+    
 }

@@ -72,12 +72,14 @@ namespace NamedFile
 
         public string appName = "文件名修改器";
 
+        public string defRulesPath = ".\\rules\\default.inf";
 
 
         public MainWindow()
         {
-            listRuleInfo = new List<RuleInfo>();
-            listRuleDatas = new List<RuleInfoData>();
+
+            listRuleInfo = NamedFun.ReadRules(defRulesPath);
+            listRuleDatas = NamedFun.GetRuleListDatas(listRuleInfo);
 
             InitializeComponent();
 
@@ -88,6 +90,7 @@ namespace NamedFile
             this.Title = appName + " - " + ver;
 
             CheckEditDelShow();
+
         }
 
         //开始处理文件
@@ -200,91 +203,7 @@ namespace NamedFile
         }
 
 
-        string FormatRuleString(RuleInfo nowInfo)
-        {
-            string showrule = nowInfo.ruleName;
-            string showtxt;
-            switch (nowInfo.ruleType)
-            {
-                case RuleTypeEnum.Insert:
-                    RuleInfoInsert rii = (RuleInfoInsert)nowInfo;
-                    string fixstr = "";
-                    if (rii.insertType == 1) fixstr = "固定文本:" + rii.insertFixStr;
-                    else fixstr = "原文件";
-                    showtxt = showrule + " - " + fixstr + ",位置:" + rii.placeType;
-                    break;
-
-                case RuleTypeEnum.Replace:
-                    RuleInfoReplace rir = (RuleInfoReplace)nowInfo;
-                    string rtype = "";
-                    if (rir.replaceType == 1) rtype = "所有";
-                    else if (rir.replaceType == 2) rtype = "最前一个";
-                    else if (rir.replaceType == 3) rtype = "最后一个";
-                    showtxt = showrule + " - " + rtype + "," + rir.replaceFindText + "->" + rir.replaceNewText;
-                    if (rir.replaceIgnoreExp == 1)
-                        showtxt += "," + "忽略扩展名";
-                    break;
-                case RuleTypeEnum.Delete:
-                    RuleInfoDelete rid = (RuleInfoDelete)nowInfo;
-                    string dtype = "";
-                    if (rid.deleteType == 1) dtype = "到结束";
-                    if (rid.deleteType == 2) dtype = "到位置：" + rid.deleteToNum.ToString();
-
-                    showtxt = showrule + " - " + dtype;
-                    if (rid.deleteIgnoreExp == 1) showtxt += "," + "忽略扩展名";
-                    if (rid.deleteL2R == 1) showtxt += "," + "从左到右";
-                    else showtxt += "," + "从右到左";
-                    break;
-                case RuleTypeEnum.UpLower:
-                    RuleInfoUpLower riul = (RuleInfoUpLower)nowInfo;
-
-                    string ultype = "";
-                    switch (riul.uplowerType)
-                    {
-                        case 1: ultype = "全部大写"; break;
-                        case 2: ultype = "首字母大写"; break;
-                        case 3: ultype = "全部小写"; break;
-                        case 4: ultype = "反转大小写"; break;
-                    }
-                    string exptype = "";
-                    switch (riul.uplowerExpType)
-                    {
-                        case 1: exptype = "忽略扩展名"; break;
-                        case 2: exptype = "扩展名小写"; break;
-                        case 3: exptype = "扩展名大写"; break;
-                    }
-                    showtxt = showrule + " - " + ultype + "," + exptype;
-                    break;
-                case RuleTypeEnum.PinYin:
-                    RuleInfoPinYin ripy = (RuleInfoPinYin)nowInfo;
-                    string pytype = "";
-                    switch (ripy.pinyinType)
-                    {
-                        case 1: pytype = "转换全拼"; break;
-                        case 2: pytype = "转首字母"; break;
-                    }
-                    showtxt = showrule + " - " + pytype;
-                    if (ripy.pinyinIgnoreExp == 1)
-                        showtxt += "," + "忽略扩展名";
-                    break;
-                case RuleTypeEnum.Serialize:
-                    RuleInfoSerialize ris = (RuleInfoSerialize)nowInfo;
-                    string stype = "";
-                    switch (ris.serializePlaceType)
-                    {
-                        case 1: stype = "插入前面"; break;
-                        case 2: stype = "插入后面"; break;
-                    }
-                    showtxt = showrule + " - " + stype;
-                    if (ris.serializeIgnoreExp == 1)
-                        showtxt += "," + "忽略扩展名";
-                    break;
-                default:
-                    showtxt = "Error : " + nowInfo.ruleType.ToString();
-                    break;
-            }
-            return showtxt;
-        }
+        
 
         //根据规则刷新新的预览文件列表
         void UpdatePreviewList()
@@ -350,6 +269,7 @@ namespace NamedFile
             SetColShowPath(justFilpath);
         }
 
+        //对List列表进行显示和隐藏切换
         void SetColShowPath(bool show)
         {
             miShowName.IsChecked = !show;
@@ -416,8 +336,14 @@ namespace NamedFile
             //lvRules.Items.RemoveAt(index);
             listRuleInfo.RemoveAt(index);
             listRuleDatas.RemoveAt(index);
-            lvRules.Items.Refresh();
+            UpdateRule();
             UpdatePreviewList();
+        }
+
+        void UpdateRule()
+        {
+            lvRules.Items.Refresh();
+            NamedFun.SaveRules(defRulesPath, listRuleInfo);
         }
 
 
@@ -435,20 +361,16 @@ namespace NamedFile
         public void AddRule(RuleInfo nowInfo)
         {
             listRuleInfo.Add(nowInfo);
-            
-            string showtxt = FormatRuleString(nowInfo);
-            listRuleDatas.Add(new RuleInfoData { isEnable = true, ruleName = nowInfo.ruleName , ruleDesc = showtxt });
-            lvRules.Items.Refresh();
 
+            listRuleDatas.Add(NamedFun.GetRuleData(nowInfo));
+            UpdateRule();
             UpdatePreviewList();
         }
         //修改列表里的现有规则，从修改界面回调回来的。
         public void EditRule(RuleInfo nowInfo, int listRoleNo)
         {
-            string showtxt = FormatRuleString(nowInfo);
-            //lvRules.Items[listRoleNo] = showtxt;
-            listRuleDatas[listRoleNo].ruleDesc = showtxt;
-            lvRules.Items.Refresh();
+            listRuleDatas[listRoleNo] = NamedFun.GetRuleData(nowInfo);
+            UpdateRule();
             UpdatePreviewList();
         }
 
