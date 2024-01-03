@@ -24,7 +24,7 @@ namespace NamedFile
         public string ruleName;
         public int no;  //当前规则的顺序号
         public bool enable = true;
-        public string ToString()
+        override public string ToString()
         {
             return ruleName;
         }
@@ -466,7 +466,8 @@ namespace NamedFile
             List<RuleInfo> list = new List<RuleInfo>();
             string str = Functions.GetFileText(ruleFile);
             //这里要按照不同的类型去解析
-
+            if (string.IsNullOrEmpty(str))
+                return list;
             JArray jary = (JArray)Newtonsoft.Json.JsonConvert.DeserializeObject(str);
             for (int i = 0; i < jary.Count; i++)
             {

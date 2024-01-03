@@ -63,7 +63,7 @@ namespace NamedFile
     /// </summary>
     public partial class MainWindow : Window
     {
-    
+
         List<FileInfoData> listSelectFiles;//当前组件绑定数据
 
         List<RuleInfo> listRuleInfo;    //当前规则详细信息
@@ -85,7 +85,7 @@ namespace NamedFile
             InitializeComponent();
 
             lvRules.ItemsSource = listRuleDatas;
-            
+
             SetColShowPath(justFilpath);
             string ver = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
             this.Title = appName + " - " + ver;
@@ -99,7 +99,7 @@ namespace NamedFile
         {
             if (listSelectFiles == null || listSelectFiles.Count == 0)
                 return;
-           
+
             for (int i = 0; i < listSelectFiles.Count; i++)
             {
                 FileInfoData fd = listSelectFiles[i];
@@ -188,7 +188,7 @@ namespace NamedFile
         }
         private void Window_Drop(object sender, DragEventArgs e)
         {
-            string dropFile = "Drop";
+            //string dropFile = "Drop";
             if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
             {
                 int count = ((System.Array)e.Data.GetData(System.Windows.DataFormats.FileDrop)).Length;
@@ -197,14 +197,14 @@ namespace NamedFile
                 {
                     string f = ((System.Array)e.Data.GetData(System.Windows.DataFormats.FileDrop)).GetValue(i).ToString();
                     filesname.Add(f);
-                    
+
                 }
                 GetFiles(filesname.ToArray());
             }
         }
 
 
-        
+
 
         //根据规则刷新新的预览文件列表
         void UpdatePreviewList()
@@ -216,7 +216,7 @@ namespace NamedFile
                 return;
             }
             labTipHere.Visibility = Visibility.Collapsed;
-            
+
 
             for (int i = 0; i < listSelectFiles.Count; i++)
             {
@@ -232,7 +232,7 @@ namespace NamedFile
                     switch (type)
                     {
                         case "RuleInfoInsert":
-                            nowStr = NamedFun.InsertProcess((RuleInfoInsert)rule, nowStr, fname,filepath);
+                            nowStr = NamedFun.InsertProcess((RuleInfoInsert)rule, nowStr, fname, filepath);
                             break;
                         case "RuleInfoReplace":
                             nowStr = NamedFun.ReplaceProcess((RuleInfoReplace)rule, nowStr);
@@ -247,21 +247,21 @@ namespace NamedFile
                             nowStr = NamedFun.PinYinProcess((RuleInfoPinYin)rule, nowStr);
                             break;
                         case "RuleInfoSerialize":
-                            nowStr = NamedFun.SerializeProcess((RuleInfoSerialize)rule, nowStr,i);
+                            nowStr = NamedFun.SerializeProcess((RuleInfoSerialize)rule, nowStr, i);
                             break;
                     }
                 }
 
                 string newpath = filepath.Replace(fname, nowStr);
                 string newname = fname.Replace(fname, nowStr);
-                
+
                 listSelectFiles[i].newPath = newpath;
                 listSelectFiles[i].newName = newname;
             }
             lvFileList.Items.Refresh();
 
         }
-        
+
 
 
 
@@ -440,7 +440,7 @@ namespace NamedFile
         }
 
         //规则启用和关闭
-        void RuleEnable(int index,bool enable)
+        void RuleEnable(int index, bool enable)
         {
             if (index == -1)
                 return;

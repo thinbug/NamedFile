@@ -35,7 +35,9 @@ namespace NamedFile
         /// </summary>
         public static string GetFileText(string path)
         {
-            return System.IO.File.ReadAllText(path);
+            if(System.IO.File.Exists(path))
+                return System.IO.File.ReadAllText(path);
+            return string.Empty;
         }
 
         public static void StreamWriter(string path, string data)

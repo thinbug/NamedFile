@@ -6,10 +6,10 @@
         xmlns:local="clr-namespace:NamedFile"
         mc:Ignorable="d"
         Title="MainWindow" Height="464" Width="856" MinHeight="350" MinWidth="550" Drop="Window_Drop" AllowDrop="True" WindowStartupLocation="CenterScreen">
-    
-   
+
+
     <Grid>
-        
+
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
@@ -31,26 +31,26 @@
                     <MenuItem x:Name="miRuleNow" Header="当前规则" IsCheckable="True" IsChecked="True" ></MenuItem>
                     <Separator></Separator>
                     <MenuItem x:Name="miRulePinyin" Header="提取首字母" IsCheckable="True" IsChecked="False" ></MenuItem>
-                    
+
                 </MenuItem>
                 <MenuItem Header="选项">
                     <MenuItem x:Name="miShowName" Header="仅显示文件名" IsCheckable="True"  Click="showFileNameClick"></MenuItem>
                 </MenuItem>
-                
+
                 <MenuItem Header="关于">
                     <MenuItem x:Name="miAbout" Header="关于" ></MenuItem>
 
                 </MenuItem>
             </Menu>
             <ToolBar DockPanel.Dock="Top" Background="#FFF0F0F0" Height="50" >
-                
+
                 <Button Content="添加文件" Height="50" Click="btnGetFiles_Click"></Button>
                 <Separator></Separator>
-                
+
                 <Button Content="开始修改" Height="50" Click="btnBNamed_Click"></Button>
-                
+
             </ToolBar>
-            
+
         </DockPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -113,14 +113,14 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
-                
+
                 <DockPanel Grid.Row="1"  Height="50" HorizontalAlignment="Center">
                     <Button Name="btnRuleUp" Content="⬆" Margin="3" Height="40" Width="40"  FontSize="20"/>
                     <Button Name="btnRuleDown" Content="⬇" Margin="3" Height="40" Width="40"  FontSize="20"/>
 
                 </DockPanel>
                 <UniformGrid  Grid.Row="2" Columns="3" MinHeight="40">
-                    
+
                     <Button Name="btnRuleAdd" Content="添加规则" Margin="3" Click="btnRuleAdd_Click"/>
                     <Button Name="btnRuleEdit" Content="修改规则" Margin="3"  Click="btnRuleEdit_Click"/>
                     <Button Name="btnRuleDel" Content="删除规则" Margin="3"  Click="btnRuleDel_Click"/>
@@ -138,5 +138,5 @@
             </StatusBar>
         </DockPanel>
     </Grid>
-    
+
 </Window>
