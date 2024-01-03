@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.CodeDom;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -226,7 +227,8 @@ namespace NamedFile
                 {
                     RuleInfo rule = listRuleInfo[j];
                     string type = rule.GetType().Name.ToString();
-
+                    if (!rule.enable)
+                        continue;
                     switch (type)
                     {
                         case "RuleInfoInsert":
@@ -437,12 +439,33 @@ namespace NamedFile
             }
         }
 
+        //规则启用和关闭
+        void RuleEnable(int index,bool enable)
+        {
+            if (index == -1)
+                return;
+            listRuleInfo[index].enable = enable;
+            listRuleDatas[index].isEnable = enable;
+            UpdateRule();
+            UpdatePreviewList();
+        }
 
+        //点击规则开关
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            CheckBox cbBox = sender as CheckBox;
+            if (cbBox != null)
+            {
+                //((TextBlock)cbBox.Content).Text
+                int index = int.Parse(cbBox.Tag.ToString()) - 1;
+                lvRules.SelectedIndex = index;
+                RuleEnable(index, cbBox.IsChecked == true);
+            }
 
-
-
+        }
 
         #endregion
+
 
     }
 }

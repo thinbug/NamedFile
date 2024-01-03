@@ -97,17 +97,18 @@
                     </ListView.ContextMenu>
                     <ListView.View>
                         <GridView x:Name="lvRuleListView" >
-                            <GridViewColumn Header="顺序">
+                            <GridViewColumn Header="顺序" Width="50">
                                 <GridViewColumn.CellTemplate >
                                     <DataTemplate>
-                                        <CheckBox IsChecked="{Binding isEnable}">
+                                        <CheckBox IsChecked="{Binding isEnable}" Tag="{Binding (ItemsControl.AlternationIndex) ,
+       RelativeSource={RelativeSource AncestorType=ListViewItem},Converter={StaticResource IndexConverterNum}}" Click="CheckBox_Click">
                                             <TextBlock Text="{Binding (ItemsControl.AlternationIndex) ,
        RelativeSource={RelativeSource AncestorType=ListViewItem},Converter={StaticResource IndexConverterNum}}" />
                                         </CheckBox>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn x:Name="gvcRuleName" Header="规则"  DisplayMemberBinding="{Binding ruleName}" />
+                            <GridViewColumn Width="auto" x:Name="gvcRuleName" Header="规则"  DisplayMemberBinding="{Binding ruleName}" />
                             <GridViewColumn Width="auto" x:Name="gvcDesc" Header="描述"  DisplayMemberBinding="{Binding ruleDesc}" />
                         </GridView>
                     </ListView.View>

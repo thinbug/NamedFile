@@ -23,6 +23,7 @@ namespace NamedFile
         public RuleTypeEnum ruleType;
         public string ruleName;
         public int no;  //当前规则的顺序号
+        public bool enable = true;
         public string ToString()
         {
             return ruleName;
@@ -347,6 +348,7 @@ namespace NamedFile
             return outStr;
         }
 
+        //显示描述
         public static string FormatRuleString(RuleInfo nowInfo)
         {
             string showrule = nowInfo.ruleName;
@@ -449,7 +451,7 @@ namespace NamedFile
         public static RuleInfoData GetRuleData(RuleInfo nowInfo)
         {
             string showtxt = NamedFun.FormatRuleString(nowInfo);
-            RuleInfoData d = (new RuleInfoData { isEnable = true, ruleName = nowInfo.ruleName, ruleDesc = showtxt });
+            RuleInfoData d = (new RuleInfoData { isEnable = nowInfo.enable, ruleName = nowInfo.ruleName, ruleDesc = showtxt });
             return d;
         }
 
