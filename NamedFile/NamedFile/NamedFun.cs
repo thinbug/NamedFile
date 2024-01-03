@@ -22,7 +22,6 @@ namespace NamedFile
     {
         public RuleTypeEnum ruleType;
         public string ruleName;
-        public int no;  //当前规则的顺序号
         public bool enable = true;
         override public string ToString()
         {
@@ -443,6 +442,7 @@ namespace NamedFile
             {
                 RuleInfo nowInfo = infos[i];
                 RuleInfoData data = GetRuleData(nowInfo);
+                data.no = i+1;
                 datas.Add(data);
             }
             return datas;

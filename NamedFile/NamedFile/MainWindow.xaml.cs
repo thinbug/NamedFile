@@ -33,6 +33,7 @@ namespace NamedFile
 
     public class RuleInfoData
     {
+        public int no { get; set; }
         public bool isEnable { get; set; }
         public string ruleName { get; set; }
         public string ruleDesc { get; set; }
@@ -342,8 +343,29 @@ namespace NamedFile
             UpdatePreviewList();
         }
 
+        //把某个规则插入某个规则
+        void InsertToRule(int from_index, int to_index)
+        {
+            if (from_index == to_index || to_index < 0 || from_index < 0 || from_index >= listRuleInfo.Count || to_index >= listRuleInfo.Count)
+                return;
+            RuleInfo info = listRuleInfo[from_index];    //当前规则详细信息
+            RuleInfoData infoData = listRuleDatas[from_index]; //当前组件绑定数据
+
+            listRuleInfo.RemoveAt(from_index);
+            listRuleDatas.RemoveAt(from_index);
+            listRuleInfo.Insert(to_index, info);
+            listRuleDatas.Insert(to_index, infoData);
+            
+            UpdateRule();
+            UpdatePreviewList();
+        }
+
         void UpdateRule()
         {
+            for (int i = 0; i < listRuleDatas.Count; i++)
+            {
+                listRuleDatas[i].no = i+1;
+            }
             lvRules.Items.Refresh();
             NamedFun.SaveRules(defRulesPath, listRuleInfo);
         }
@@ -464,8 +486,63 @@ namespace NamedFile
 
         }
 
+
+
         #endregion
 
+        private void lvRules_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (sender is ListView listview
+                         && e.LeftButton == MouseButtonState.Pressed
+                         && listview.SelectedItem != null)
+            {
+                DragDrop.DoDragDrop(listview, listview.SelectedItem, DragDropEffects.Move);
+                //tbStat.Text = "lvRules_MouseMove";
+            }
+        }
+
+        private void lvRules_Drop(object sender, DragEventArgs e)
+        {
+            
+            object data = e.Data.GetData(typeof(RuleInfoData));
+            if (data is RuleInfoData)
+            {
+                int insert_index = GetCurrentIndex(new GetPositionDelegate(e.GetPosition));
+                if (insert_index == -1)
+                    return;
+                InsertToRule(((RuleInfoData)data).no - 1, insert_index);
+            }
+        }
+        private int GetCurrentIndex(GetPositionDelegate getPosition)
+        {
+            int index = -1;
+            for (int i = 0; i < lvRules.Items.Count; ++i)
+            {
+                ListViewItem item = GetListViewItem(i);
+                if (item != null && this.IsMouseOverTarget(item, getPosition))
+                {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
+        }
+
+        private bool IsMouseOverTarget(Visual target, GetPositionDelegate getPosition)
+        {
+            Rect bounds = VisualTreeHelper.GetDescendantBounds(target);
+            Point mousePos = getPosition((IInputElement)target);
+            return bounds.Contains(mousePos);
+        }
+
+        delegate Point GetPositionDelegate(IInputElement element);
+
+        ListViewItem GetListViewItem(int index)
+        {
+            if (lvRules.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated)
+                return null;
+            return lvRules.ItemContainerGenerator.ContainerFromIndex(index) as ListViewItem;
+        }
 
     }
 }

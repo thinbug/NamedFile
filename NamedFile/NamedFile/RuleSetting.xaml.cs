@@ -61,8 +61,8 @@ namespace NamedFile
         void RulesType_Insert()
         {
             RuleInfoInsert rule = new RuleInfoInsert();
-            rule.no = listRule.Items.Count;
-            rulesDict.Add(rule.no, rule);
+            //rule.no = listRule.Items.Count;
+            rulesDict.Add((int)rule.ruleType, rule);
             rulesDictEnum.Add(rule.ruleType, rule);
             listRule.Items.Add(rule.ToString());
 
@@ -70,40 +70,40 @@ namespace NamedFile
         void RulesType_Replace()
         {
             RuleInfoReplace rule = new RuleInfoReplace();
-            rule.no = listRule.Items.Count;
-            rulesDict.Add(rule.no, rule);
+            //rule.no = listRule.Items.Count;
+            rulesDict.Add((int)rule.ruleType, rule);
             rulesDictEnum.Add(rule.ruleType, rule);
             listRule.Items.Add(rule.ToString());
         }
         void RulesType_Delete()
         {
             RuleInfoDelete rule = new RuleInfoDelete();
-            rule.no = listRule.Items.Count;
-            rulesDict.Add(rule.no, rule);
+            //rule.no = listRule.Items.Count;
+            rulesDict.Add((int)rule.ruleType, rule);
             rulesDictEnum.Add(rule.ruleType, rule);
             listRule.Items.Add(rule.ToString());
         }
         void RulesType_UpLower()
         {
             RuleInfoUpLower rule = new RuleInfoUpLower();
-            rule.no = listRule.Items.Count;
-            rulesDict.Add(rule.no, rule);
+            //rule.no = listRule.Items.Count;
+            rulesDict.Add((int)rule.ruleType, rule);
             rulesDictEnum.Add(rule.ruleType, rule);
             listRule.Items.Add(rule.ToString());
         }
         void RulesType_Pinyin()
         {
             RuleInfoPinYin rule = new RuleInfoPinYin();
-            rule.no = listRule.Items.Count;
-            rulesDict.Add(rule.no, rule);
+            //rule.no = listRule.Items.Count;
+            rulesDict.Add((int)rule.ruleType, rule);
             rulesDictEnum.Add(rule.ruleType, rule);
             listRule.Items.Add(rule.ToString());
         }
         void RulesType_Serialize()
         {
             RuleInfoSerialize rule = new RuleInfoSerialize();
-            rule.no = listRule.Items.Count;
-            rulesDict.Add(rule.no, rule);
+            //rule.no = listRule.Items.Count;
+            rulesDict.Add((int)rule.ruleType, rule);
             rulesDictEnum.Add(rule.ruleType, rule);
             listRule.Items.Add(rule.ToString());
         }

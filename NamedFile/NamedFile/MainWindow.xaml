@@ -84,7 +84,8 @@
                     <RowDefinition Height="auto" ></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <ListView x:Name="lvRules" Grid.Column="1"  AlternationCount="1000000"  SelectionChanged="lbRules_SelectionChanged" MouseDown="lbRules_MouseDown" MouseDoubleClick="lbRules_MouseDoubleClick" >
+                <ListView x:Name="lvRules" Grid.Column="1"  AlternationCount="1000000"  SelectionChanged="lbRules_SelectionChanged" MouseDoubleClick="lbRules_MouseDoubleClick" MouseMove="lvRules_MouseMove"
+                          AllowDrop="True" MouseDown="lbRules_MouseDown" Drop="lvRules_Drop" >
                     <ListView.Resources>
                         <local:IndexConverter x:Key="IndexConverterNum"  AddValue="1"/>
                     </ListView.Resources>
@@ -100,10 +101,8 @@
                             <GridViewColumn Header="顺序" Width="50">
                                 <GridViewColumn.CellTemplate >
                                     <DataTemplate>
-                                        <CheckBox IsChecked="{Binding isEnable}" Tag="{Binding (ItemsControl.AlternationIndex) ,
-       RelativeSource={RelativeSource AncestorType=ListViewItem},Converter={StaticResource IndexConverterNum}}" Click="CheckBox_Click">
-                                            <TextBlock Text="{Binding (ItemsControl.AlternationIndex) ,
-       RelativeSource={RelativeSource AncestorType=ListViewItem},Converter={StaticResource IndexConverterNum}}" />
+                                        <CheckBox IsChecked="{Binding isEnable}" Tag="{Binding no}" Click="CheckBox_Click">
+                                            <TextBlock Text="{Binding no}" />
                                         </CheckBox>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
@@ -133,7 +132,7 @@
         <DockPanel Grid.Row="2">
             <StatusBar DockPanel.Dock="Bottom">
                 <StatusBarItem>
-                    <TextBlock Name="lblCursorPosition" Text="xxxxxx" />
+                    <TextBlock Name="tbStat" Text="xxxxxx" />
                 </StatusBarItem>
             </StatusBar>
         </DockPanel>
