@@ -516,9 +516,11 @@ namespace NamedFile
         private int GetCurrentIndex(GetPositionDelegate getPosition)
         {
             int index = -1;
+            if (lvRules.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated)
+                return index;
             for (int i = 0; i < lvRules.Items.Count; ++i)
             {
-                ListViewItem item = GetListViewItem(i);
+                ListViewItem item = lvRules.ItemContainerGenerator.ContainerFromIndex(i) as ListViewItem;
                 if (item != null && this.IsMouseOverTarget(item, getPosition))
                 {
                     index = i;
@@ -528,6 +530,7 @@ namespace NamedFile
             return index;
         }
 
+        delegate Point GetPositionDelegate(IInputElement element);
         private bool IsMouseOverTarget(Visual target, GetPositionDelegate getPosition)
         {
             Rect bounds = VisualTreeHelper.GetDescendantBounds(target);
@@ -535,14 +538,8 @@ namespace NamedFile
             return bounds.Contains(mousePos);
         }
 
-        delegate Point GetPositionDelegate(IInputElement element);
 
-        ListViewItem GetListViewItem(int index)
-        {
-            if (lvRules.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated)
-                return null;
-            return lvRules.ItemContainerGenerator.ContainerFromIndex(index) as ListViewItem;
-        }
+      
 
     }
 }
